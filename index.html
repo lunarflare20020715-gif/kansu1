@@ -2294,6 +2294,7 @@
         wordEqRevealed: false,
         pAnswered: false,
         recentPracticeSigs: [],
+        lastQuadS3WasSym: false,
         practiceSession: {
           total: 0,
           correct: 0,
@@ -2700,8 +2701,20 @@
           rate = fracDiv(fracSub(y2, y1), makeFrac(q - p, 1));
         } else {
           a = pick([makeFrac(1, 1), makeFrac(-1, 1), makeFrac(2, 1), makeFrac(-2, 1), makeFrac(1, 2), makeFrac(-1, 2), makeFrac(3, 1), makeFrac(-3, 1)]);
-          p = randInt(-3, 2);
-          q = p + randInt(1, 4);
+          // 約18%の頻度で対称区間（p = -q、答えが0になる思考力枠）を出題（連続出題は回避）
+          if (!app.lastQuadS3WasSym && Math.random() < 0.18) {
+            var symChoices = (a.d === 2) ? [2, 4] : [2, 3, 4];
+            var symK = pick(symChoices);
+            p = -symK;
+            q = symK;
+            app.lastQuadS3WasSym = true;
+          } else {
+            do {
+              p = randInt(-3, 2);
+              q = p + randInt(1, 4);
+            } while (p + q === 0);
+            app.lastQuadS3WasSym = false;
+          }
           y1 = fracMul(a, makeFrac(p * p, 1));
           y2 = fracMul(a, makeFrac(q * q, 1));
           rate = fracMul(a, makeFrac(p + q, 1));
@@ -2712,7 +2725,17 @@
         if (unit === 'prop' || unit === 'lin') {
           exp = (unit === 'prop' ? '比例' : '一次関数') + 'では、変化の割合は常に傾き <span class="math-expr">a</span> と等しくなります。したがって答えは <strong>' + renderFracHtml(rate) + '</strong> です。';
         } else if (unit === 'quad') {
-          exp = '二次関数 <span class="math-expr">y</span> = <span class="math-expr">ax</span><sup>2</sup> の変化の割合は <span class="math-expr">a</span>(<span class="math-expr">p</span> + <span class="math-expr">q</span>) ＝ ' + renderFracHtml(a) + ' × (' + p + ' + ' + q + ') ＝ <strong>' + renderFracHtml(rate) + '</strong> です。';
+          if (p + q === 0) {
+            var dx = q - p;
+            var yStr = renderFracHtml(y1);
+            var ySubStr = (y1.n < 0) ? '(' + yStr + ')' : yStr;
+            exp = '<span class="math-expr">x</span> = ' + p + ' のとき <span class="math-expr">y</span> = ' + yStr + '、<span class="math-expr">x</span> = ' + q + ' のときも <span class="math-expr">y</span> = ' + yStr + '。<br>' +
+              '左右の <span class="math-expr">x</span> の絶対値が同じ（放物線は <span class="math-expr">y</span> 軸に対して対称）なので、<span class="math-expr">y</span> の値がまったく同じ（<span class="math-expr">y</span> = ' + yStr + '）になります。<br>' +
+              'そのため <span class="math-expr">y</span> の増加量 ＝ ' + yStr + ' − ' + ySubStr + ' ＝ <strong>0</strong> となり、変化の割合 ＝ <span class="frac-wrap"><span class="frac"><span class="frac-num">0</span><span class="frac-den">' + dx + '</span></span></span> ＝ <strong>0</strong> です。<br>' +
+              '💡 グラフ上の2点が同じ高さになり、結ぶ直線が真横（水平）になるため傾き（＝変化の割合）は 0 になります。公式 <span class="math-expr">a</span>(<span class="math-expr">p</span> + <span class="math-expr">q</span>) でも ' + renderFracHtml(a) + ' × (' + p + ' + ' + q + ') ＝ ' + renderFracHtml(a) + ' × 0 ＝ <strong>0</strong> と確かめられます。';
+          } else {
+            exp = '二次関数 <span class="math-expr">y</span> = <span class="math-expr">ax</span><sup>2</sup> の変化の割合は <span class="math-expr">a</span>(<span class="math-expr">p</span> + <span class="math-expr">q</span>) ＝ ' + renderFracHtml(a) + ' × (' + p + ' + ' + q + ') ＝ <strong>' + renderFracHtml(rate) + '</strong> です。';
+          }
         } else {
           exp = '<span class="math-expr">x</span> = ' + p + ' のとき <span class="math-expr">y</span> = ' + renderFracHtml(y1) + '、<span class="math-expr">x</span> = ' + q + ' のとき <span class="math-expr">y</span> = ' + renderFracHtml(y2) + '。<br>変化の割合 ＝ (' + renderFracHtml(y2) + ' − (' + renderFracHtml(y1) + ')) ÷ (' + q + ' − ' + p + ') ＝ <strong>' + renderFracHtml(rate) + '</strong> です。';
         }
@@ -2759,14 +2782,28 @@
           if (fracVal(iy1) <= fracVal(iy2)) { yMin = iy1; yMax = iy2; } else { yMin = iy2; yMax = iy1; }
         } else {
           a = pick([makeFrac(1, 1), makeFrac(-1, 1), makeFrac(2, 1), makeFrac(-2, 1), makeFrac(1, 2), makeFrac(-1, 2)]);
-          if (Math.random() < 0.65) {
+          if (Math.random() < 0.75) {
+            // 0をまたぐパターン（p < 0 < q かつ |p| ≠ |q| を必須にする）
             crossesZero = true;
-            p = pick([-4, -2]);
-            q = pick([2, 4]);
-            if (p === -2 && q === 2) q = 4;
+            var crossPairs = [
+              [-4, 1], [-4, 2], [-4, 3],
+              [-3, 1], [-3, 2], [-3, 4],
+              [-2, 1], [-2, 3], [-2, 4],
+              [-1, 2], [-1, 3], [-1, 4]
+            ];
+            var cp = pick(crossPairs);
+            p = cp[0];
+            q = cp[1];
           } else {
-            p = pick([1, 2]);
-            q = p + 2;
+            // 0をまたがない同符号パターン（正の区間・負の区間）
+            crossesZero = false;
+            var sameSignPairs = [
+              [1, 3], [1, 4], [2, 4], [2, 3],
+              [-3, -1], [-4, -1], [-4, -2], [-3, -2]
+            ];
+            var sp = pick(sameSignPairs);
+            p = sp[0];
+            q = sp[1];
           }
           var cands = [fracMul(a, makeFrac(p * p, 1)), fracMul(a, makeFrac(q * q, 1))];
           if (crossesZero) cands.push(makeFrac(0, 1));
@@ -2791,12 +2828,17 @@
         }
 
         var hintText = (unit === 'quad' && crossesZero)
-          ? '⚠️ 注意！x の変域が 0 をまたいでいるよ！放物線は原点を通るため、y = 0 が最小値（a > 0）または最大値（a < 0）になるよ！'
+          ? '⚠️ 注意！x の変域が 0 をまたいでいるよ！放物線は原点を通るため、y = 0 が最小値（a > 0）または最大値（a < 0）になり、もう一方は絶対値が大きい方の端点を代入しよう！'
           : 'x の両端の値を代入して y の値を比べよう。a が負のときは大小が逆転するよ。';
 
         var exp = 'この区間で <span class="math-expr">y</span> の最小値は ' + renderFracHtml(yMin) + '、最大値は ' + renderFracHtml(yMax) + ' なので、変域は <strong>' + renderFracHtml(yMin) + ' ≦ <span class="math-expr">y</span> ≦ ' + renderFracHtml(yMax) + '</strong> です。';
         if (unit === 'quad' && crossesZero) {
-          exp = '<span class="math-expr">x</span> の変域が 0 をまたぐため、頂点（<span class="math-expr">x</span> = 0, <span class="math-expr">y</span> = 0）が' + (a.n > 0 ? '最小値' : '最大値') + 'になります。<br>' + exp;
+          var farX = Math.abs(p) > Math.abs(q) ? p : q;
+          var farY = fracMul(a, makeFrac(farX * farX, 1));
+          exp = '<span class="math-expr">x</span> の変域が 0 をまたぐため、' + (a.n > 0 ? '最小値' : '最大値') + 'は <strong>0</strong>（<span class="math-expr">x</span> = 0 のとき）になります。<br>' +
+            'もう一方は、絶対値が大きい <span class="math-expr">x</span> = ' + farX + ' を代入して ' + (a.n > 0 ? '最大値' : '最小値') + ' ＝ <strong>' + renderFracHtml(farY) + '</strong> です。<br>' + exp;
+        } else if (unit === 'quad') {
+          exp = '<span class="math-expr">x</span> の変域が 0 をまたがないため、両端の <span class="math-expr">x</span> = ' + p + ', ' + q + ' を代入して比べます。<br>' + exp;
         }
 
         var obj = {
