@@ -1,0 +1,4568 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>COMPASS 関数マスター</title>
+  <style>
+    :root {
+      --indigo: #4f46e5;
+      --indigo-dark: #3730a3;
+      --indigo-light: #eef2ff;
+      --indigo-border: #c7d2fe;
+      --emerald: #059669;
+      --emerald-dark: #047857;
+      --emerald-light: #ecfdf5;
+      --emerald-border: #6ee7b7;
+      --rose: #e11d48;
+      --rose-light: #fff1f2;
+      --rose-border: #fda4af;
+      --amber: #d97706;
+      --amber-light: #fffbeb;
+      --amber-border: #fde68a;
+      --sky: #0284c7;
+      --sky-light: #f0f9ff;
+      --sky-border: #bae6fd;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-300: #cbd5e1;
+      --slate-400: #94a3b8;
+      --slate-500: #64748b;
+      --slate-700: #334155;
+      --slate-900: #0f172a;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
+      --shadow-md: 0 4px 14px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+      background: #e2e8f0;
+      color: var(--slate-900);
+      overflow-x: hidden;
+    }
+
+    .app-shell {
+      max-width: 580px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--slate-50);
+      box-shadow: 0 0 28px rgba(15, 23, 42, 0.09);
+    }
+
+    /* =========================================================
+       ヘッダー & トップレベルモード切替
+    ========================================================= */
+    .app-header {
+      background: linear-gradient(135deg, var(--indigo) 0%, var(--indigo-dark) 100%);
+      color: #ffffff;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      box-shadow: 0 2px 8px rgba(55, 48, 163, 0.25);
+    }
+
+    .app-title {
+      font-size: 1.04rem;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 0;
+    }
+
+    .score-badges {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .score-badge {
+      background: rgba(255, 255, 255, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
+    .score-badge span.num {
+      font-size: 0.88rem;
+      color: #fef08a;
+    }
+
+    .header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .header-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .student-badge {
+      font-family: inherit;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      color: #ffffff;
+      border-radius: 999px;
+      padding: 3px 9px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      max-width: 190px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: background 0.15s ease;
+    }
+
+    .student-badge:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .student-badge.unset {
+      background: rgba(254, 240, 138, 0.25);
+      border-color: #fde047;
+      color: #fef9c3;
+    }
+
+    .queue-badge {
+      font-family: inherit;
+      display: none;
+      align-items: center;
+      gap: 3px;
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      color: #be123c;
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: 0.7rem;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .queue-badge.visible {
+      display: inline-flex;
+    }
+
+    .practice-log-bar {
+      background: #ffffff;
+      border: 1.5px solid var(--indigo-border);
+      border-radius: var(--radius-md);
+      padding: 9px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .practice-log-info {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--slate-700);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .practice-log-status {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--emerald);
+      min-height: 1em;
+    }
+
+    .practice-log-status.error {
+      color: var(--rose);
+    }
+
+    .practice-send-btn {
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 800;
+      padding: 7px 12px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: var(--indigo);
+      color: #ffffff;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(79, 70, 229, 0.25);
+      transition: all 0.14s ease;
+      white-space: nowrap;
+    }
+
+    .practice-send-btn:disabled {
+      background: var(--slate-300);
+      color: var(--slate-500);
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    .sync-status-banner {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      font-weight: 800;
+      border: 1.5px solid var(--slate-200);
+      background: var(--slate-50);
+      color: var(--slate-700);
+    }
+
+    .sync-status-banner.visible {
+      display: flex;
+    }
+
+    .sync-status-banner.sending {
+      background: var(--sky-light);
+      border-color: var(--sky-border);
+      color: #0369a1;
+    }
+
+    .sync-status-banner.success {
+      background: var(--emerald-light);
+      border-color: var(--emerald-border);
+      color: #065f46;
+    }
+
+    .sync-status-banner.error {
+      background: var(--rose-light);
+      border-color: var(--rose-border);
+      color: #9f1239;
+    }
+
+    .sync-retry-btn {
+      font-family: inherit;
+      font-size: 0.76rem;
+      font-weight: 800;
+      padding: 5px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--rose);
+      background: #ffffff;
+      color: var(--rose);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .modal-input {
+      width: 100%;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--slate-300);
+      outline: none;
+      color: var(--slate-900);
+      text-align: center;
+    }
+
+    .modal-input:focus {
+      border-color: var(--indigo);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.18);
+    }
+
+    .modal-btn.primary {
+      background: var(--indigo);
+      border-color: var(--indigo-dark);
+      color: #ffffff;
+    }
+
+    .mode-switcher-wrap {
+      background: #ffffff;
+      border-bottom: 1px solid var(--slate-200);
+      padding: 8px 12px;
+    }
+
+    .mode-switcher {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      background: var(--slate-100);
+      padding: 4px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--slate-200);
+    }
+
+    .mode-btn {
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 800;
+      padding: 9px 8px;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--slate-500);
+      cursor: pointer;
+      transition: all 0.16s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .mode-btn.active {
+      background: #ffffff;
+      color: var(--indigo-dark);
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.1);
+    }
+
+    .mode-btn.active[data-mode="test"] {
+      color: #b45309;
+    }
+
+    /* =========================================================
+       メイン領域
+    ========================================================= */
+    .app-main {
+      flex: 1;
+      padding: 10px 12px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .view-section {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .view-section.active {
+      display: flex;
+    }
+
+    /* =========================================================
+       練習ver. ナビゲーション
+    ========================================================= */
+    .unit-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      background: #ffffff;
+      padding: 5px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--slate-200);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .unit-tab {
+      font-family: inherit;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 8px 4px;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--slate-700);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-align: center;
+      line-height: 1.25;
+    }
+
+    .unit-tab small {
+      display: block;
+      font-size: 0.66rem;
+      opacity: 0.78;
+      font-weight: 600;
+    }
+
+    .unit-tab.active {
+      background: var(--indigo);
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(79, 70, 229, 0.3);
+    }
+
+    /* ステップ選択タブ（3列×2行グリッド） */
+    .step-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .step-tab {
+      font-family: inherit;
+      min-height: 46px;
+      padding: 6px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--slate-200);
+      background: #ffffff;
+      color: var(--slate-700);
+      font-size: 0.77rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      text-align: center;
+      line-height: 1.2;
+      transition: all 0.15s ease;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .step-tab:active { transform: scale(0.97); }
+
+    .step-tab .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 19px;
+      height: 19px;
+      border-radius: 50%;
+      background: var(--slate-100);
+      color: var(--slate-700);
+      font-size: 0.72rem;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    .step-tab.active {
+      background: var(--indigo-light);
+      border-color: var(--indigo);
+      color: var(--indigo-dark);
+      box-shadow: 0 2px 8px rgba(79, 70, 229, 0.18);
+    }
+
+    .step-tab.active .step-num {
+      background: var(--indigo);
+      color: #ffffff;
+    }
+
+    /* =========================================================
+       問題カード共通
+    ========================================================= */
+    .problem-card, .setup-card, .result-card {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--slate-200);
+      padding: 14px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .card-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .badge-group {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .problem-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--indigo-light);
+      color: var(--indigo-dark);
+      border: 1px solid var(--indigo-border);
+      font-size: 0.74rem;
+      font-weight: 800;
+      padding: 3px 10px;
+      border-radius: 999px;
+    }
+
+    .problem-badge.step-pill {
+      background: var(--sky-light);
+      color: #0369a1;
+      border-color: var(--sky-border);
+    }
+
+    .visual-toggle-btn {
+      font-family: inherit;
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1.5px solid var(--amber-border);
+      background: var(--amber-light);
+      color: #92400e;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .visual-toggle-btn:active { transform: scale(0.96); }
+
+    /* 問題文・シチュエーション */
+    .story-box {
+      display: none;
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      font-size: 0.9rem;
+      line-height: 1.65;
+      color: var(--slate-900);
+    }
+
+    /* ステップ6：小問切替タブ */
+    .subq-tabs {
+      display: none;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .subq-btn {
+      font-family: inherit;
+      min-height: 38px;
+      padding: 6px 4px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--slate-300);
+      background: #ffffff;
+      color: var(--slate-700);
+      font-size: 0.78rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .subq-btn:active { transform: scale(0.97); }
+
+    .subq-btn.current {
+      background: var(--indigo);
+      border-color: var(--indigo-dark);
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(79, 70, 229, 0.3);
+    }
+
+    .subq-btn.done {
+      background: var(--emerald-light);
+      border-color: var(--emerald-border);
+      color: #065f46;
+    }
+
+    .subq-btn.done.current {
+      background: var(--emerald);
+      border-color: var(--emerald-dark);
+      color: #ffffff;
+    }
+
+    .eq-ref-badge {
+      display: none;
+      padding: 7px 10px;
+      border-radius: var(--radius-sm);
+      background: var(--emerald-light);
+      border: 1.5px solid var(--emerald-border);
+      color: #065f46;
+      font-size: 0.86rem;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .eq-ref-badge.unsolved {
+      background: var(--amber-light);
+      border-color: var(--amber-border);
+      color: #92400e;
+      font-size: 0.8rem;
+    }
+
+    .question-text {
+      font-size: 0.98rem;
+      font-weight: 700;
+      line-height: 1.7;
+      color: var(--slate-900);
+    }
+
+    /* 教科書準拠の数式スタイル */
+    .math-expr {
+      font-family: "Times New Roman", Georgia, serif;
+      font-style: italic;
+      font-weight: 700;
+    }
+
+    .frac-wrap {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+      margin: 0 2px;
+    }
+
+    .frac-sign {
+      margin-right: 2px;
+      line-height: 1;
+      font-weight: 700;
+    }
+
+    .frac {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: middle;
+      line-height: 1.05;
+      font-size: 0.88em;
+    }
+
+    .frac-num {
+      padding: 0 4px 2px;
+      border-bottom: 1.6px solid currentColor;
+      text-align: center;
+      min-width: 1em;
+    }
+
+    .frac-den {
+      padding: 2px 4px 0;
+      text-align: center;
+      min-width: 1em;
+    }
+
+    /* ビジュアル領域 */
+    .visual-area {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius-md);
+      padding: 10px;
+    }
+
+    .visual-area.visible { display: flex; }
+
+    .svg-container {
+      width: 100%;
+      max-width: 270px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .svg-container svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .hint-note {
+      display: none;
+      width: 100%;
+      background: var(--amber-light);
+      border: 1px solid var(--amber-border);
+      color: #92400e;
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      font-weight: 600;
+    }
+
+    /* 解答入力エリア */
+    .answer-area {
+      background: var(--indigo-light);
+      border: 1.5px solid var(--indigo-border);
+      border-radius: var(--radius-md);
+      padding: 12px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-height: 64px;
+    }
+
+    .ans-label {
+      font-size: 1.14rem;
+      font-weight: 800;
+      color: var(--slate-900);
+    }
+
+    .ans-unit {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--slate-700);
+      margin-left: 2px;
+    }
+
+    .input-slot {
+      min-width: 58px;
+      height: 44px;
+      padding: 0 10px;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--slate-300);
+      background: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.14rem;
+      font-weight: 800;
+      color: var(--slate-900);
+      cursor: pointer;
+      transition: all 0.12s ease;
+      user-select: none;
+    }
+
+    .input-slot.active {
+      border-color: var(--indigo);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.22);
+    }
+
+    .input-slot.sign-slot {
+      min-width: 42px;
+      width: 42px;
+      padding: 0;
+      border-style: dashed;
+      color: var(--slate-500);
+    }
+
+    .input-slot.sign-slot.filled {
+      border-style: solid;
+      color: var(--indigo-dark);
+    }
+
+    .input-slot.sign-slot.active {
+      border-style: solid;
+      border-color: var(--indigo);
+    }
+
+    .field-host {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+    }
+
+    .frac-input-wrap {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      vertical-align: middle;
+    }
+
+    .frac-input-sign {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--indigo-dark);
+      line-height: 1;
+      min-width: 14px;
+      text-align: center;
+    }
+
+    .frac-input-stack {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .frac-input-bar {
+      width: 100%;
+      min-width: 58px;
+      height: 2.5px;
+      background: var(--slate-900);
+      border-radius: 2px;
+    }
+
+    .input-slot.frac-part-slot {
+      min-width: 54px;
+      height: 36px;
+      padding: 0 8px;
+      font-size: 1.04rem;
+    }
+
+    .inv-frac-box {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .inv-frac-bar {
+      width: 100%;
+      min-width: 64px;
+      height: 2.5px;
+      background: var(--slate-900);
+      border-radius: 2px;
+    }
+
+    .inv-frac-den {
+      font-family: "Times New Roman", Georgia, serif;
+      font-style: italic;
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--slate-900);
+      line-height: 1.1;
+    }
+
+    /* フィードバック・解説 */
+    .feedback-box {
+      display: none;
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      font-size: 0.88rem;
+      line-height: 1.55;
+      font-weight: 700;
+    }
+
+    .feedback-box.correct {
+      display: block;
+      background: var(--emerald-light);
+      border: 1.5px solid var(--emerald-border);
+      color: #065f46;
+    }
+
+    .feedback-box.wrong {
+      display: block;
+      background: var(--rose-light);
+      border: 1.5px solid var(--rose-border);
+      color: #9f1239;
+    }
+
+    .feedback-box.warn {
+      display: block;
+      background: var(--amber-light);
+      border: 1.5px solid var(--amber-border);
+      color: #92400e;
+    }
+
+    .one-omission-note {
+      margin-top: 6px;
+      padding: 6px 8px;
+      border-radius: var(--radius-sm);
+      background: #ffffff;
+      border: 1px solid var(--emerald-border);
+      color: #047857;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .explanation-box {
+      display: none;
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      font-size: 0.85rem;
+      line-height: 1.65;
+      color: var(--slate-700);
+    }
+
+    .explanation-title {
+      font-weight: 800;
+      color: var(--indigo-dark);
+      margin-bottom: 4px;
+      font-size: 0.84rem;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .action-btn {
+      flex: 1;
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 800;
+      padding: 11px 12px;
+      border-radius: var(--radius-md);
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: none;
+    }
+
+    .action-btn:active { transform: scale(0.98); }
+
+    .btn-exp {
+      background: var(--amber-light);
+      color: #92400e;
+      border: 1.5px solid var(--amber-border);
+    }
+
+    .btn-next {
+      background: var(--emerald);
+      color: #ffffff;
+      box-shadow: 0 3px 8px rgba(5, 150, 105, 0.3);
+    }
+
+    /* =========================================================
+       テストver. 設定画面
+    ========================================================= */
+    .test-subscreen {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .test-subscreen.active {
+      display: flex;
+    }
+
+    .setup-section-title {
+      font-size: 0.86rem;
+      font-weight: 800;
+      color: var(--slate-700);
+      margin: 2px 0 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .preset-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+    }
+
+    .preset-btn {
+      font-family: inherit;
+      padding: 9px 8px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--indigo-border);
+      background: var(--indigo-light);
+      color: var(--indigo-dark);
+      font-size: 0.8rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.14s ease;
+    }
+
+    .preset-btn:active { transform: scale(0.97); }
+    .preset-btn:hover { background: #e0e7ff; }
+
+    .check-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 7px;
+    }
+
+    .check-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .check-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 8px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--slate-200);
+      background: var(--slate-50);
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--slate-700);
+      user-select: none;
+      transition: all 0.14s ease;
+      min-height: 44px;
+    }
+
+    .check-pill input {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--indigo);
+      margin: 0;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .check-pill.checked {
+      background: var(--indigo-light);
+      border-color: var(--indigo);
+      color: var(--indigo-dark);
+    }
+
+    .count-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+    }
+
+    .count-btn {
+      font-family: inherit;
+      padding: 10px 6px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--slate-200);
+      background: #ffffff;
+      color: var(--slate-700);
+      font-size: 0.84rem;
+      font-weight: 800;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.14s ease;
+    }
+
+    .count-btn small {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--slate-500);
+      margin-top: 2px;
+    }
+
+    .count-btn.active {
+      background: var(--amber-light);
+      border-color: var(--amber);
+      color: #92400e;
+      box-shadow: 0 2px 6px rgba(217, 119, 6, 0.18);
+    }
+
+    .count-btn.active small {
+      color: #b45309;
+    }
+
+    .setup-note {
+      font-size: 0.78rem;
+      color: var(--slate-500);
+      text-align: center;
+      margin: 2px 0;
+      font-weight: 600;
+    }
+
+    .start-test-btn {
+      width: 100%;
+      font-family: inherit;
+      font-size: 1.02rem;
+      font-weight: 800;
+      padding: 14px;
+      border-radius: var(--radius-md);
+      border: none;
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: #ffffff;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.32);
+      transition: all 0.15s ease;
+    }
+
+    .start-test-btn:active { transform: scale(0.98); }
+
+    /* =========================================================
+       テストver. 解答中画面
+    ========================================================= */
+    .test-status-bar {
+      background: #ffffff;
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .test-status-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .test-progress-label {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: var(--indigo-dark);
+    }
+
+    .test-timer {
+      font-variant-numeric: tabular-nums;
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: var(--slate-700);
+      background: var(--slate-100);
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    .test-abort-btn {
+      font-family: inherit;
+      font-size: 0.76rem;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--rose-border);
+      background: var(--rose-light);
+      color: var(--rose);
+      cursor: pointer;
+    }
+
+    .test-progress-track {
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--slate-200);
+      overflow: hidden;
+    }
+
+    .test-progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--indigo) 0%, #f59e0b 100%);
+      border-radius: 999px;
+      transition: width 0.25s ease;
+    }
+
+    /* =========================================================
+       テストver. 結果＆振り返り画面
+    ========================================================= */
+    .score-hero {
+      text-align: center;
+      padding: 16px 12px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, #eef2ff 0%, #fffbeb 100%);
+      border: 1.5px solid var(--indigo-border);
+    }
+
+    .score-hero-label {
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: var(--slate-500);
+      margin-bottom: 4px;
+    }
+
+    .score-big {
+      font-size: 2.7rem;
+      font-weight: 900;
+      color: var(--indigo-dark);
+      line-height: 1.1;
+    }
+
+    .score-big span.denom {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--slate-500);
+      margin-left: 4px;
+    }
+
+    .score-meta {
+      margin-top: 8px;
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--slate-700);
+    }
+
+    .rank-message {
+      margin-top: 10px;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      background: #ffffff;
+      border: 1px solid var(--indigo-border);
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--indigo-dark);
+    }
+
+    .breakdown-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .breakdown-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .breakdown-top {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--slate-700);
+    }
+
+    .breakdown-bar-bg {
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: var(--slate-100);
+      overflow: hidden;
+    }
+
+    .breakdown-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--emerald);
+    }
+
+    .breakdown-bar-fill.mid { background: var(--amber); }
+    .breakdown-bar-fill.low { background: var(--rose); }
+
+    .result-actions {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    @media (min-width: 440px) {
+      .result-actions {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .res-btn {
+      font-family: inherit;
+      font-size: 0.82rem;
+      font-weight: 800;
+      padding: 11px 8px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--slate-300);
+      background: #ffffff;
+      color: var(--slate-700);
+      cursor: pointer;
+    }
+
+    .res-btn.primary {
+      background: var(--indigo);
+      border-color: var(--indigo-dark);
+      color: #ffffff;
+    }
+
+    /* 1問ごとの振り返りリスト */
+    .review-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .review-item {
+      background: #ffffff;
+      border-radius: var(--radius-md);
+      border: 1.5px solid var(--slate-200);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .review-item.ok { border-left: 5px solid var(--emerald); }
+    .review-item.ng { border-left: 5px solid var(--rose); }
+
+    .review-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .review-status {
+      font-size: 0.84rem;
+      font-weight: 800;
+    }
+
+    .review-status.ok { color: var(--emerald); }
+    .review-status.ng { color: var(--rose); }
+
+    .review-qtext {
+      font-size: 0.88rem;
+      line-height: 1.6;
+      color: var(--slate-900);
+      font-weight: 600;
+    }
+
+    .review-story {
+      font-size: 0.82rem;
+      line-height: 1.55;
+      color: var(--slate-700);
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius-sm);
+      padding: 7px 9px;
+    }
+
+    .review-ans-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: var(--slate-50);
+      border-radius: var(--radius-sm);
+      padding: 8px;
+      font-size: 0.84rem;
+    }
+
+    .review-ans-col strong {
+      display: block;
+      font-size: 0.72rem;
+      color: var(--slate-500);
+      margin-bottom: 2px;
+    }
+
+    .review-details summary {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--indigo-dark);
+      cursor: pointer;
+      padding: 4px 0;
+      user-select: none;
+    }
+
+    .review-exp-content {
+      margin-top: 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 9px;
+      background: var(--slate-50);
+      border: 1px solid var(--slate-200);
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      line-height: 1.6;
+      color: var(--slate-700);
+    }
+
+    .review-exp-text {
+      width: 100%;
+    }
+
+    /* =========================================================
+       カスタムキーパッド
+    ========================================================= */
+    .keypad-dock {
+      position: sticky;
+      bottom: 0;
+      z-index: 30;
+      background: #ffffff;
+      border-top: 1.5px solid var(--slate-200);
+      padding: 8px 10px calc(10px + env(safe-area-inset-bottom, 0px));
+      box-shadow: 0 -4px 16px rgba(15, 23, 42, 0.08);
+    }
+
+    .keypad-dock.hidden {
+      display: none;
+    }
+
+    .keypad-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+    }
+
+    .key-btn {
+      font-family: inherit;
+      height: 46px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--slate-200);
+      background: var(--slate-50);
+      color: var(--slate-900);
+      font-size: 1.08rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      transition: all 0.1s ease;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+    }
+
+    .key-btn:active {
+      transform: scale(0.95);
+      background: var(--slate-200);
+    }
+
+    .key-btn.key-op {
+      background: var(--indigo-light);
+      border-color: var(--indigo-border);
+      color: var(--indigo-dark);
+      font-size: 1.14rem;
+    }
+
+    .key-btn.key-frac {
+      background: var(--indigo-light);
+      border-color: var(--indigo-border);
+      color: var(--indigo-dark);
+      font-size: 0.78rem;
+      gap: 4px;
+    }
+
+    .key-frac-icon {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      line-height: 0.95;
+      font-size: 0.72rem;
+      font-weight: 800;
+    }
+
+    .key-frac-icon .kf-top {
+      border-bottom: 1.5px solid currentColor;
+      padding: 0 2px 1px;
+    }
+
+    .key-frac-icon .kf-bot {
+      padding: 1px 2px 0;
+    }
+
+    .key-btn.key-fn {
+      background: var(--slate-100);
+      color: var(--slate-700);
+      font-size: 0.84rem;
+    }
+
+    .key-btn.key-clear {
+      background: var(--rose-light);
+      border-color: var(--rose-border);
+      color: var(--rose);
+      font-size: 0.86rem;
+    }
+
+    .key-btn.key-secondary-wide {
+      grid-column: span 2;
+      background: var(--slate-100);
+      color: var(--slate-700);
+      font-size: 0.86rem;
+    }
+
+    .key-btn.key-submit {
+      grid-column: span 2;
+      background: linear-gradient(135deg, var(--indigo) 0%, var(--indigo-dark) 100%);
+      border-color: var(--indigo-dark);
+      color: #ffffff;
+      font-size: 0.96rem;
+      box-shadow: 0 3px 8px rgba(79, 70, 229, 0.3);
+    }
+
+    .key-btn.key-submit.test-submit {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      border-color: #b45309;
+      box-shadow: 0 3px 8px rgba(217, 119, 6, 0.32);
+    }
+
+    /* =========================================================
+       カスタム確認モーダル（confirm()不使用）
+    ========================================================= */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 16px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal-box {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      width: 100%;
+      max-width: 340px;
+      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.22);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      text-align: center;
+    }
+
+    .modal-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--slate-900);
+      margin: 0;
+    }
+
+    .modal-desc {
+      font-size: 0.86rem;
+      color: var(--slate-500);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .modal-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .modal-btn {
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 800;
+      padding: 10px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--slate-300);
+      background: #ffffff;
+      color: var(--slate-700);
+      cursor: pointer;
+    }
+
+    .modal-btn.danger {
+      background: var(--rose);
+      border-color: var(--rose);
+      color: #ffffff;
+    }
+
+    @media (max-width: 380px) {
+      .app-title { font-size: 0.94rem; }
+      .step-tab { font-size: 0.71rem; padding: 5px 4px; }
+      .key-btn { height: 42px; font-size: 1.02rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <!-- ヘッダー -->
+    <header class="app-header">
+      <div class="header-left">
+        <h1 class="app-title">🧭 COMPASS 関数マスター</h1>
+        <div class="header-meta-row">
+          <button type="button" id="student-badge-btn" class="student-badge unset" title="クリックして生徒名・IDを設定">👤 名前を設定</button>
+          <button type="button" id="queue-retry-btn" class="queue-badge" title="未送信の成績データを再送信">⚠️ 未送信(0) 再送</button>
+        </div>
+      </div>
+      <div class="score-badges" id="practice-score-badges">
+        <div class="score-badge">正解 <span id="score-total" class="num">0</span></div>
+        <div class="score-badge">連続 <span id="score-streak" class="num">0</span></div>
+      </div>
+    </header>
+
+    <!-- トップレベル モード切替（練習ver. / テストver.） -->
+    <div class="mode-switcher-wrap">
+      <div class="mode-switcher" role="tablist" aria-label="学習モード切替">
+        <button type="button" class="mode-btn active" data-mode="practice" aria-selected="true">📝 練習ver.</button>
+        <button type="button" class="mode-btn" data-mode="test" aria-selected="false">⏱️ テストver.</button>
+      </div>
+    </div>
+
+    <main class="app-main">
+      <!-- =====================================================
+           1. 練習ver. ビュー
+      ===================================================== -->
+      <section id="practice-view" class="view-section active" aria-label="練習モード">
+        <!-- 単元選択タブ -->
+        <nav class="unit-tabs" aria-label="単元選択">
+          <button type="button" class="unit-tab active" data-unit="prop">比例<small>中1</small></button>
+          <button type="button" class="unit-tab" data-unit="inv">反比例<small>中1</small></button>
+          <button type="button" class="unit-tab" data-unit="lin">一次関数<small>中2</small></button>
+          <button type="button" class="unit-tab" data-unit="quad">二次関数<small>中3</small></button>
+        </nav>
+
+        <!-- ステップ選択タブ（3列×2行グリッド） -->
+        <nav class="step-tabs" aria-label="ステップ選択">
+          <button type="button" class="step-tab active" data-step="s1">
+            <span class="step-num">1</span><span>グラフから式</span>
+          </button>
+          <button type="button" class="step-tab" data-step="s2">
+            <span class="step-num">2</span><span>式から値</span>
+          </button>
+          <button type="button" class="step-tab" data-step="s3">
+            <span class="step-num">3</span><span>変化の割合</span>
+          </button>
+          <button type="button" class="step-tab" data-step="s4">
+            <span class="step-num">4</span><span>変域</span>
+          </button>
+          <button type="button" class="step-tab" data-step="s5">
+            <span class="step-num">5</span><span>総合応用</span>
+          </button>
+          <button type="button" class="step-tab" data-step="s6">
+            <span class="step-num">6</span><span>文章題</span>
+          </button>
+        </nav>
+
+        <!-- 問題カード -->
+        <div class="problem-card">
+          <div class="card-top-row">
+            <span id="problem-badge" class="problem-badge">比例・グラフから式</span>
+            <button type="button" id="visual-toggle-btn" class="visual-toggle-btn">💡 ヒント／グラフを見る</button>
+          </div>
+
+          <!-- ステップ6専用：シチュエーション文 -->
+          <div id="story-box" class="story-box"></div>
+
+          <!-- ステップ6専用：小問切替タブ -->
+          <div id="subq-tabs" class="subq-tabs" role="tablist" aria-label="文章題の小問切替">
+            <button type="button" id="subq-btn-0" class="subq-btn current" data-sub="0">(1) 式</button>
+            <button type="button" id="subq-btn-1" class="subq-btn" data-sub="1">(2) 値①</button>
+            <button type="button" id="subq-btn-2" class="subq-btn" data-sub="2">(3) 値②</button>
+          </div>
+
+          <!-- ステップ6専用：求めた式リファレンス -->
+          <div id="eq-ref-badge" class="eq-ref-badge"></div>
+
+          <!-- 問い文 -->
+          <div id="question-text" class="question-text"></div>
+
+          <!-- ビジュアル（SVGグラフ・図解・ヒント） -->
+          <div id="visual-area" class="visual-area">
+            <div id="svg-container" class="svg-container"></div>
+            <div id="hint-note" class="hint-note"></div>
+          </div>
+
+          <!-- 解答入力エリア -->
+          <div id="practice-answer-area" class="answer-area"></div>
+
+          <!-- 判定フィードバック -->
+          <div id="feedback-box" class="feedback-box"></div>
+
+          <!-- 解説ボックス -->
+          <div id="explanation-box" class="explanation-box">
+            <div class="explanation-title">📝 解説</div>
+            <div id="explanation-body"></div>
+          </div>
+
+          <!-- アクションボタン -->
+          <div class="action-row">
+            <button type="button" id="show-exp-btn" class="action-btn btn-exp">解説を見る</button>
+            <button type="button" id="next-btn" class="action-btn btn-next">次の問題へ ➔</button>
+          </div>
+        </div>
+
+        <!-- 練習記録送信バー -->
+        <div class="practice-log-bar" aria-label="練習記録のスプレッドシート送信">
+          <div class="practice-log-info">
+            <span id="practice-log-summary">📊 練習記録：0問中 0問正解</span>
+            <span id="practice-log-status" class="practice-log-status"></span>
+          </div>
+          <button type="button" id="practice-send-btn" class="practice-send-btn" disabled>📤 記録を送信</button>
+        </div>
+      </section>
+
+      <!-- =====================================================
+           2. テストver. ビュー
+      ===================================================== -->
+      <section id="test-view" class="view-section" aria-label="テストモード">
+        <!-- 2A. テスト設定画面 -->
+        <div id="test-setup-screen" class="test-subscreen active">
+          <div class="setup-card">
+            <div class="setup-section-title">⚡ クイック設定（おすすめ）</div>
+            <div class="preset-grid">
+              <button type="button" class="preset-btn" data-preset="all">全単元ミックス</button>
+              <button type="button" class="preset-btn" data-preset="g1">中1（比例・反比例）</button>
+              <button type="button" class="preset-btn" data-preset="g2">中2（一次関数）</button>
+              <button type="button" class="preset-btn" data-preset="g3">中3（二次関数）</button>
+            </div>
+
+            <div class="setup-section-title">📚 出題する単元（複数選択OK）</div>
+            <div class="check-grid-2" id="test-unit-checks">
+              <label class="check-pill checked"><input type="checkbox" value="prop" checked> 比例（中1）</label>
+              <label class="check-pill checked"><input type="checkbox" value="inv" checked> 反比例（中1）</label>
+              <label class="check-pill checked"><input type="checkbox" value="lin" checked> 一次関数（中2）</label>
+              <label class="check-pill checked"><input type="checkbox" value="quad" checked> 二次関数（中3）</label>
+            </div>
+
+            <div class="setup-section-title">🎯 出題するステップ（複数選択OK）</div>
+            <div class="check-grid-3" id="test-step-checks">
+              <label class="check-pill checked"><input type="checkbox" value="s1" checked> 1.グラフから式</label>
+              <label class="check-pill checked"><input type="checkbox" value="s2" checked> 2.式から値</label>
+              <label class="check-pill checked"><input type="checkbox" value="s3" checked> 3.変化の割合</label>
+              <label class="check-pill checked"><input type="checkbox" value="s4" checked> 4.変域</label>
+              <label class="check-pill checked"><input type="checkbox" value="s5" checked> 5.総合応用</label>
+              <label class="check-pill checked"><input type="checkbox" value="s6" checked> 6.文章題</label>
+            </div>
+
+            <div class="setup-section-title">🔢 問題数</div>
+            <div class="count-grid" id="test-count-btns">
+              <button type="button" class="count-btn" data-count="5">5問<small>20点 × 5</small></button>
+              <button type="button" class="count-btn active" data-count="10">10問<small>10点 × 10</small></button>
+              <button type="button" class="count-btn" data-count="20">20問<small>5点 × 20</small></button>
+            </div>
+
+            <p class="setup-note">※ テスト中はヒント・途中採点なし。終了後に100点満点換算で採点されます。</p>
+
+            <div id="setup-error-box" class="feedback-box"></div>
+
+            <button type="button" id="start-test-btn" class="start-test-btn">🚀 テスト開始！</button>
+          </div>
+        </div>
+
+        <!-- 2B. テスト解答中画面 -->
+        <div id="test-active-screen" class="test-subscreen">
+          <div class="test-status-bar">
+            <div class="test-status-top">
+              <span id="test-progress-label" class="test-progress-label">第 1 / 10 問</span>
+              <span id="test-timer" class="test-timer">⏱️ 00:00</span>
+              <button type="button" id="test-abort-btn" class="test-abort-btn">中断する</button>
+            </div>
+            <div class="test-progress-track">
+              <div id="test-progress-fill" class="test-progress-fill"></div>
+            </div>
+          </div>
+
+          <div class="problem-card">
+            <div class="card-top-row">
+              <div class="badge-group">
+                <span id="test-unit-badge" class="problem-badge">比例</span>
+                <span id="test-step-badge" class="problem-badge step-pill">1. グラフから式</span>
+              </div>
+            </div>
+
+            <div id="test-story-box" class="story-box"></div>
+            <div id="test-question-text" class="question-text"></div>
+
+            <!-- ステップ1のみグラフ表示 -->
+            <div id="test-visual-area" class="visual-area">
+              <div id="test-svg-container" class="svg-container"></div>
+            </div>
+
+            <!-- テスト用解答入力エリア -->
+            <div id="test-answer-area" class="answer-area"></div>
+
+            <!-- 入力不備などの案内 -->
+            <div id="test-warn-box" class="feedback-box"></div>
+          </div>
+        </div>
+
+        <!-- 2C. テスト結果＆振り返り画面 -->
+        <div id="test-result-screen" class="test-subscreen">
+          <div class="result-card">
+            <div id="test-sync-banner" class="sync-status-banner">
+              <span id="test-sync-text">⏳ スプレッドシートに記録中...</span>
+              <button type="button" id="test-sync-retry-btn" class="sync-retry-btn" style="display:none;">再送信</button>
+            </div>
+            <div class="score-hero">
+              <div class="score-hero-label">テスト結果（100点満点換算）</div>
+              <div class="score-big"><span id="res-score">0</span><span class="denom">点 / 100 点</span></div>
+              <div class="score-meta">
+                <span>正解数：<strong id="res-correct">0 / 10</strong> 問</span>
+                <span>タイム：<strong id="res-time">00:00</strong></span>
+              </div>
+              <div id="res-rank-msg" class="rank-message"></div>
+            </div>
+
+            <div class="setup-section-title">📊 単元別の正答率</div>
+            <div id="res-unit-breakdown" class="breakdown-list"></div>
+
+            <div class="setup-section-title">📈 ステップ別の正答率</div>
+            <div id="res-step-breakdown" class="breakdown-list"></div>
+
+            <div class="result-actions">
+              <button type="button" id="res-retry-btn" class="res-btn primary">🔄 同じ設定でもう一度</button>
+              <button type="button" id="res-setup-btn" class="res-btn">⚙️ テスト設定に戻る</button>
+              <button type="button" id="res-practice-btn" class="res-btn">📝 練習ver.に戻る</button>
+            </div>
+          </div>
+
+          <div class="setup-section-title" style="padding: 0 4px;">📝 全問題の解答と解説</div>
+          <div id="res-review-list" class="review-list"></div>
+        </div>
+      </section>
+    </main>
+
+    <!-- カスタムキーパッド（練習中 & テスト解答中で共用） -->
+    <footer id="keypad-dock" class="keypad-dock" aria-label="解答キーパッド">
+      <div class="keypad-grid">
+        <button type="button" class="key-btn" data-key="7">7</button>
+        <button type="button" class="key-btn" data-key="8">8</button>
+        <button type="button" class="key-btn" data-key="9">9</button>
+        <button type="button" class="key-btn key-fn" data-key="BACK">⌫ 消す</button>
+
+        <button type="button" class="key-btn" data-key="4">4</button>
+        <button type="button" class="key-btn" data-key="5">5</button>
+        <button type="button" class="key-btn" data-key="6">6</button>
+        <button type="button" class="key-btn key-op" data-key="+">＋</button>
+
+        <button type="button" class="key-btn" data-key="1">1</button>
+        <button type="button" class="key-btn" data-key="2">2</button>
+        <button type="button" class="key-btn" data-key="3">3</button>
+        <button type="button" class="key-btn key-op" data-key="-">－</button>
+
+        <button type="button" class="key-btn" data-key="0">0</button>
+        <button type="button" class="key-btn key-op" data-key="FRAC">
+          <span class="key-frac-icon"><span class="kf-top">a</span><span class="kf-bot">b</span></span>
+          <span style="font-size:0.78rem; margin-left:3px;">分数</span>
+        </button>
+        <button type="button" class="key-btn key-fn" data-key="NEXT">⇥ 次の枠</button>
+        <button type="button" class="key-btn key-clear" data-key="CLEAR">C クリア</button>
+
+        <button type="button" id="key-secondary-btn" class="key-btn key-secondary-wide" data-key="SECONDARY">🔄 別の問題にする</button>
+        <button type="button" id="key-submit-btn" class="key-btn key-submit" data-key="SUBMIT">✓ 答え合わせ</button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- テスト中断確認モーダル（confirm()の代替） -->
+  <div id="confirm-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-box">
+      <h2 id="modal-title" class="modal-title">テストを中断しますか？</h2>
+      <p class="modal-desc">現在の解答内容は破棄され、テスト設定画面に戻ります。</p>
+      <div class="modal-actions">
+        <button type="button" id="modal-cancel-btn" class="modal-btn">続ける</button>
+        <button type="button" id="modal-ok-btn" class="modal-btn danger">中断する</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 生徒名・ID登録モーダル -->
+  <div id="student-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="student-modal-title">
+    <div class="modal-box">
+      <h2 id="student-modal-title" class="modal-title">👤 生徒名・IDを登録</h2>
+      <p id="student-modal-desc" class="modal-desc">スプレッドシートの成績記録に使用します（後からヘッダーでいつでも変更できます）。</p>
+      <input type="text" id="student-name-input" class="modal-input" placeholder="例：101 山田太郎" maxlength="30" autocomplete="off">
+      <div class="modal-actions">
+        <button type="button" id="student-skip-btn" class="modal-btn">スキップ</button>
+        <button type="button" id="student-save-btn" class="modal-btn primary">保存する</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* =========================================================
+         1. ユーティリティ & 分数演算
+      ========================================================= */
+      function $(id) { return document.getElementById(id); }
+
+      function randInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      function pick(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
+      }
+
+      function gcd(a, b) {
+        a = Math.abs(a);
+        b = Math.abs(b);
+        while (b !== 0) {
+          var t = a % b;
+          a = b;
+          b = t;
+        }
+        return a || 1;
+      }
+
+      function makeFrac(n, d) {
+        if (d === undefined) d = 1;
+        if (d === 0) return { n: 0, d: 1 };
+        if (d < 0) { n = -n; d = -d; }
+        if (n === 0) return { n: 0, d: 1 };
+        var g = gcd(n, d);
+        return { n: n / g, d: d / g };
+      }
+
+      function fracEqual(f1, f2) {
+        if (!f1 || !f2) return false;
+        return f1.n === f2.n && f1.d === f2.d;
+      }
+
+      function fracVal(f) { return f.n / f.d; }
+      function fracMul(f1, f2) { return makeFrac(f1.n * f2.n, f1.d * f2.d); }
+      function fracDiv(f1, f2) { return makeFrac(f1.n * f2.d, f1.d * f2.n); }
+      function fracAdd(f1, f2) { return makeFrac(f1.n * f2.d + f2.n * f1.d, f1.d * f2.d); }
+      function fracSub(f1, f2) { return makeFrac(f1.n * f2.d - f2.n * f1.d, f1.d * f2.d); }
+      function fracAbs(f) { return makeFrac(Math.abs(f.n), f.d); }
+
+      function parseInputFrac(raw) {
+        if (typeof raw !== 'string') return null;
+        var s = raw.trim();
+        if (!s || s === '+' || s === '-' || s === '/' || s.endsWith('/')) return null;
+        var parts = s.split('/');
+        if (parts.length > 2) return null;
+        if (parts.length === 1) {
+          if (!/^[+-]?\d+$/.test(parts[0])) return null;
+          return makeFrac(parseInt(parts[0], 10), 1);
+        }
+        if (!/^[+-]?\d+$/.test(parts[0]) || !/^\d+$/.test(parts[1])) return null;
+        var den = parseInt(parts[1], 10);
+        if (den === 0) return null;
+        return makeFrac(parseInt(parts[0], 10), den);
+      }
+
+      function formatTime(sec) {
+        var m = Math.floor(sec / 60);
+        var s = sec % 60;
+        return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+      }
+
+      /* =========================================================
+         2. 教科書準拠の数式HTMLフォーマッタ
+      ========================================================= */
+      function renderFracHtml(f, omitSign) {
+        var isNeg = f.n < 0;
+        var absN = Math.abs(f.n);
+        var signStr = (!omitSign && isNeg) ? '−' : '';
+        if (f.d === 1) return signStr + String(absN);
+        var signHtml = signStr ? '<span class="frac-sign">' + signStr + '</span>' : '';
+        return '<span class="frac-wrap">' + signHtml + '<span class="frac"><span class="frac-num">' + absN + '</span><span class="frac-den">' + f.d + '</span></span></span>';
+      }
+
+      function renderRawFracHtml(signVal, numStr, denStr, omitSign) {
+        var signHtml = (!omitSign && signVal === '-') ? '<span class="frac-sign">−</span>' : '';
+        return '<span class="frac-wrap">' + signHtml + '<span class="frac"><span class="frac-num">' + numStr + '</span><span class="frac-den">' + denStr + '</span></span></span>';
+      }
+
+      function formatCoeffX(aFrac, varHtml) {
+        if (aFrac.d === 1 && aFrac.n === 1) return varHtml;
+        if (aFrac.d === 1 && aFrac.n === -1) return '−' + varHtml;
+        return renderFracHtml(aFrac, false) + varHtml;
+      }
+
+      function formatEquationHtml(unit, aFrac, bFrac) {
+        var xHtml = '<span class="math-expr">x</span>';
+        var yHtml = '<span class="math-expr">y</span>';
+        if (unit === 'prop') {
+          return yHtml + ' = ' + formatCoeffX(aFrac, xHtml);
+        }
+        if (unit === 'inv') {
+          var signHtml = aFrac.n < 0 ? '<span class="frac-sign">−</span>' : '';
+          return yHtml + ' = <span class="frac-wrap">' + signHtml + '<span class="frac"><span class="frac-num">' + Math.abs(aFrac.n) + '</span><span class="frac-den">' + xHtml + '</span></span></span>';
+        }
+        if (unit === 'lin') {
+          var termA = formatCoeffX(aFrac, xHtml);
+          if (!bFrac || bFrac.n === 0) return yHtml + ' = ' + termA;
+          var bSign = bFrac.n > 0 ? ' + ' : ' − ';
+          return yHtml + ' = ' + termA + bSign + renderFracHtml(fracAbs(bFrac), true);
+        }
+        if (unit === 'quad') {
+          return yHtml + ' = ' + formatCoeffX(aFrac, xHtml + '<sup>2</sup>');
+        }
+        return '';
+      }
+
+      function formatCorrectAnswerHtml(q) {
+        if (q.inputMode === 'eq') {
+          return formatEquationHtml(q.unit, q.ansA, q.ansB);
+        }
+        if (q.inputMode === 'val') {
+          var u = q.valUnit ? ' ' + q.valUnit : '';
+          return (q.valLabel ? q.valLabel + ' ' : '') + renderFracHtml(q.ansVal) + u;
+        }
+        if (q.inputMode === 'range') {
+          return renderFracHtml(q.ansMin) + ' ≦ <span class="math-expr">y</span> ≦ ' + renderFracHtml(q.ansMax);
+        }
+        return '';
+      }
+
+      /* =========================================================
+         3. SVG 座標平面グラフ描画
+      ========================================================= */
+      var clipIdCounter = 0;
+
+      function renderGraphSvg(unit, aFrac, bFrac, opts) {
+        opts = opts || {};
+        clipIdCounter++;
+        var clipId = 'plot-clip-' + clipIdCounter;
+        var size = 260;
+        var pad = 22;
+        var range = 6;
+        var inner = size - pad * 2;
+        var step = inner / (range * 2);
+
+        function toX(x) { return pad + (x + range) * step; }
+        function toY(y) { return pad + (range - y) * step; }
+
+        var svg = [];
+        svg.push('<svg viewBox="0 0 ' + size + ' ' + size + '" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="座標平面グラフ">');
+        svg.push('<rect x="0" y="0" width="' + size + '" height="' + size + '" rx="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>');
+        svg.push('<defs><clipPath id="' + clipId + '"><rect x="' + pad + '" y="' + pad + '" width="' + inner + '" height="' + inner + '"/></clipPath></defs>');
+
+        for (var i = -range; i <= range; i++) {
+          var gx = toX(i);
+          var gy = toY(i);
+          var stroke = (i === 0) ? '#334155' : '#e2e8f0';
+          var sw = (i === 0) ? '1.6' : '0.8';
+          svg.push('<line x1="' + gx + '" y1="' + pad + '" x2="' + gx + '" y2="' + (size - pad) + '" stroke="' + stroke + '" stroke-width="' + sw + '"/>');
+          svg.push('<line x1="' + pad + '" y1="' + gy + '" x2="' + (size - pad) + '" y2="' + gy + '" stroke="' + stroke + '" stroke-width="' + sw + '"/>');
+        }
+
+        var cx = toX(0), cy = toY(0);
+        svg.push('<polygon points="' + (size - pad + 5) + ',' + cy + ' ' + (size - pad - 2) + ',' + (cy - 3.5) + ' ' + (size - pad - 2) + ',' + (cy + 3.5) + '" fill="#334155"/>');
+        svg.push('<polygon points="' + cx + ',' + (pad - 5) + ' ' + (cx - 3.5) + ',' + (pad + 2) + ' ' + (cx + 3.5) + ',' + (pad + 2) + '" fill="#334155"/>');
+        svg.push('<text x="' + (size - 12) + '" y="' + (cy + 14) + '" font-size="11" font-style="italic" font-weight="700" fill="#334155">x</text>');
+        svg.push('<text x="' + (cx + 6) + '" y="' + (pad - 4) + '" font-size="11" font-style="italic" font-weight="700" fill="#334155">y</text>');
+        svg.push('<text x="' + (cx - 11) + '" y="' + (cy + 12) + '" font-size="10" font-weight="700" fill="#475569">O</text>');
+
+        svg.push('<text x="' + toX(5) + '" y="' + (cy + 13) + '" font-size="9" text-anchor="middle" fill="#64748b">5</text>');
+        svg.push('<text x="' + toX(-5) + '" y="' + (cy + 13) + '" font-size="9" text-anchor="middle" fill="#64748b">-5</text>');
+        svg.push('<text x="' + (cx - 10) + '" y="' + (toY(5) + 3) + '" font-size="9" text-anchor="middle" fill="#64748b">5</text>');
+        svg.push('<text x="' + (cx - 12) + '" y="' + (toY(-5) + 3) + '" font-size="9" text-anchor="middle" fill="#64748b">-5</text>');
+
+        var a = fracVal(aFrac);
+        var b = bFrac ? fracVal(bFrac) : 0;
+
+        svg.push('<g clip-path="url(#' + clipId + ')">');
+        if (unit === 'prop' || unit === 'lin') {
+          svg.push('<line x1="' + toX(-range) + '" y1="' + toY(a * (-range) + b) + '" x2="' + toX(range) + '" y2="' + toY(a * range + b) + '" stroke="#059669" stroke-width="2.6" stroke-linecap="round"/>');
+        } else if (unit === 'inv') {
+          var branches = [[-range, -0.15], [0.15, range]];
+          for (var bi = 0; bi < branches.length; bi++) {
+            var pts = [];
+            var xs = branches[bi][0], xe = branches[bi][1];
+            for (var k = 0; k <= 80; k++) {
+              var x = xs + (xe - xs) * (k / 80);
+              var y = a / x;
+              if (Math.abs(y) <= range + 2) pts.push(toX(x).toFixed(1) + ',' + toY(y).toFixed(1));
+            }
+            if (pts.length > 1) {
+              svg.push('<polyline points="' + pts.join(' ') + '" fill="none" stroke="#059669" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>');
+            }
+          }
+        } else if (unit === 'quad') {
+          var qpts = [];
+          for (var qk = 0; qk <= 120; qk++) {
+            var qx = -range + (range * 2) * (qk / 120);
+            var qy = a * qx * qx;
+            if (Math.abs(qy) <= range + 2) qpts.push(toX(qx).toFixed(1) + ',' + toY(qy).toFixed(1));
+          }
+          if (qpts.length > 1) {
+            svg.push('<polyline points="' + qpts.join(' ') + '" fill="none" stroke="#059669" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>');
+          }
+        }
+
+        if (opts.showLattice) {
+          for (var lx = -range + 1; lx <= range - 1; lx++) {
+            var ly = null;
+            if (unit === 'prop') ly = a * lx;
+            else if (unit === 'lin') ly = a * lx + b;
+            else if (unit === 'inv' && lx !== 0) ly = a / lx;
+            else if (unit === 'quad') ly = a * lx * lx;
+            if (ly !== null && Math.abs(ly - Math.round(ly)) < 1e-6 && Math.abs(ly) <= range - 1) {
+              svg.push('<circle cx="' + toX(lx) + '" cy="' + toY(ly) + '" r="3.4" fill="#059669" stroke="#ffffff" stroke-width="1.2"/>');
+            }
+          }
+        }
+
+        if (opts.points && opts.points.length) {
+          for (var pi = 0; pi < opts.points.length; pi++) {
+            var pt = opts.points[pi];
+            if (Math.abs(pt.x) <= range && Math.abs(pt.y) <= range) {
+              svg.push('<circle cx="' + toX(pt.x) + '" cy="' + toY(pt.y) + '" r="4.5" fill="#e11d48" stroke="#ffffff" stroke-width="1.5"/>');
+            }
+          }
+        }
+        svg.push('</g></svg>');
+        return svg.join('');
+      }
+
+      /* =========================================================
+         4. 文章題用 SVG図解ビルダー
+      ========================================================= */
+      function svgRectMovingProp(ab, bc, speed) {
+        return '<svg viewBox="0 0 260 155" xmlns="http://www.w3.org/2000/svg">' +
+          '<rect x="0" y="0" width="260" height="155" rx="10" fill="#ffffff" stroke="#e2e8f0"/>' +
+          '<rect x="45" y="30" width="160" height="86" fill="#f8fafc" stroke="#334155" stroke-width="2"/>' +
+          '<polygon points="45,30 45,116 135,116" fill="#bbf7d0" stroke="#059669" stroke-width="2"/>' +
+          '<circle cx="135" cy="116" r="5" fill="#e11d48"/>' +
+          '<line x1="145" y1="116" x2="178" y2="116" stroke="#e11d48" stroke-width="2"/>' +
+          '<polygon points="182,116 174,112 174,120" fill="#e11d48"/>' +
+          '<text x="32" y="28" font-size="12" font-weight="700" fill="#0f172a">A</text>' +
+          '<text x="32" y="124" font-size="12" font-weight="700" fill="#0f172a">B</text>' +
+          '<text x="210" y="124" font-size="12" font-weight="700" fill="#0f172a">C</text>' +
+          '<text x="210" y="28" font-size="12" font-weight="700" fill="#0f172a">D</text>' +
+          '<text x="135" y="135" font-size="12" font-weight="800" text-anchor="middle" fill="#e11d48">P (毎秒' + speed + 'cm)</text>' +
+          '<text x="16" y="77" font-size="11" font-weight="700" fill="#334155">' + ab + 'cm</text>' +
+          '<text x="90" y="108" font-size="11" font-weight="700" text-anchor="middle" fill="#065f46">底辺 ' + speed + 'x</text>' +
+          '<text x="125" y="21" font-size="11" font-weight="700" text-anchor="middle" fill="#475569">' + bc + 'cm</text>' +
+          '</svg>';
+      }
+
+      function svgGears(labelA, labelB, subtitle) {
+        return '<svg viewBox="0 0 260 140" xmlns="http://www.w3.org/2000/svg">' +
+          '<rect x="0" y="0" width="260" height="140" rx="10" fill="#ffffff" stroke="#e2e8f0"/>' +
+          '<circle cx="88" cy="68" r="38" fill="#eef2ff" stroke="#4f46e5" stroke-width="4" stroke-dasharray="8 4"/>' +
+          '<circle cx="88" cy="68" r="10" fill="#ffffff" stroke="#4f46e5" stroke-width="2"/>' +
+          '<circle cx="164" cy="68" r="28" fill="#ecfdf5" stroke="#059669" stroke-width="4" stroke-dasharray="7 4"/>' +
+          '<circle cx="164" cy="68" r="8" fill="#ffffff" stroke="#059669" stroke-width="2"/>' +
+          '<text x="88" y="48" font-size="10.5" font-weight="800" text-anchor="middle" fill="#3730a3">' + labelA + '</text>' +
+          '<text x="164" y="54" font-size="10.5" font-weight="800" text-anchor="middle" fill="#065f46">' + labelB + '</text>' +
+          '<text x="130" y="126" font-size="11" font-weight="700" text-anchor="middle" fill="#475569">' + subtitle + '</text>' +
+          '</svg>';
+      }
+
+      function svgScaleNails(n1, w1) {
+        return '<svg viewBox="0 0 260 135" xmlns="http://www.w3.org/2000/svg">' +
+          '<rect x="0" y="0" width="260" height="135" rx="10" fill="#ffffff" stroke="#e2e8f0"/>' +
+          '<rect x="65" y="72" width="130" height="44" rx="8" fill="#eef2ff" stroke="#4f46e5" stroke-width="2"/>' +
+          '<line x1="80" y1="62" x2="180" y2="62" stroke="#334155" stroke-width="4" stroke-linecap="round"/>' +
+          '<line x1="130" y1="62" x2="130" y2="72" stroke="#334155" stroke-width="3"/>' +
+          '<circle cx="130" cy="94" r="14" fill="#ffffff" stroke="#4f46e5" stroke-width="2"/>' +
+          '<line x1="130" y1="94" x2="138" y2="85" stroke="#e11d48" stroke-width="2"/>' +
+          '<text x="130" y="42" font-size="12" font-weight="800" text-anchor="middle" fill="#0f172a">くぎ ' + n1 + '本 ＝ ' + w1 + 'g</text>' +
+          '<text x="130" y="128" font-size="11" font-weight="700" text-anchor="middle" fill="#475569">1本あたりの重さを考えよう</text>' +
+          '</svg>';
+      }
+
+      function svgRoadSpeed(topText, bottomText) {
+        return '<svg viewBox="0 0 260 125" xmlns="http://www.w3.org/2000/svg">' +
+          '<rect x="0" y="0" width="260" height="125" rx="10" fill="#ffffff" stroke="#e2e8f0"/>' +
+          '<line x1="28" y1="74" x2="232" y2="74" stroke="#334155" stroke-width="3" stroke-linecap="round"/>' +
+          '<circle cx="36" cy="74" r="5" fill="#4f46e5"/>' +
+          '<circle cx="224" cy="74" r="5" fill="#059669"/>' +
+          '<line x1="46" y1="54" x2="210" y2="54" stroke="#4f46e5" stroke-width="2" stroke-dasharray="5 3"/>' +
+          '<polygon points="214,54 205,49 205,59" fill="#4f46e5"/>' +
+          '<text x="130" y="38" font-size="12" font-weight="800" text-anchor="middle" fill="#3730a3">' + topText + '</text>' +
+          '<text x="130" y="102" font-size="11" font-weight="700" text-anchor="middle" fill="#065f46">' + bottomText + '</text>' +
+          '</svg>';
+      }
+
+      function svgRectArea(area) {
+        return '<svg viewBox="0 0 260 135" xmlns="http://www.w3.org/2000/svg">' +
+          '<rect x="0" y="0" width="260" height="135" rx="10" fill="#ffffff" stroke="#e2e8f0"/>' +
+          '<rect x="65" y="28" width="130" height="74" fill="#ecfdf5" stroke="#059669" stroke-width="2.2"/>' +
+          '<text x="130" y="70" font-size="14" font-weight="800" text-anchor="middle" fill="#065f46">面積 ' + area + ' cm²</text>' +
+          '<text x="38" y="69" font-size="12" font-weight="800" text-anchor="middle" fill="#3730a3">縦 x cm</text>' +
+          '<text x="130" y="120" font-size="12" font-weight="800" text-anchor="middle" fill="#3730a3">横 y cm（縦 × 横 ＝ ' + area + '）</text>' +
+          '</svg>';
+      }
+
+      function svgWaterTank(initL, rate, isInc) {
+        var arrow = isInc ? '▼ 毎分 +' + rate + ' L 入れる' : '▼ 毎分 ' + rate + ' L ぬく';
+        var col = isInc ? '#0284c7' : '#e11d48';
+        return '<svg viewBox="0 0 260 150" xmlns="http://www.w3.org/2000/svg">' +
+          '<rect x="0" y="0" width="260" height="150" rx="10" fill="#ffffff" stroke="#e2e8f0"/>' +
+          '<rect x="75" y="42" width="110" height="84" fill="#f8fafc" stroke="#334155" stroke-width="2.5"/>' +
+          '<rect x="77" y="80" width="106" height="44" fill="#bae6fd"/>' +
+          '<line x1="77" y1="80" x2="183" y2="80" stroke="#0284c7" stroke-width="2"/>' +
+          '<text x="130" y="28" font-size="11.5" font-weight="800" text-anchor="middle" fill="' + col + '">' + arrow + '</text>' +
+          '<text x="130" y="106" font-size="12" font-weight="800" text-anchor="middle" fill="#0369a1">はじめ ' + initL + ' L</text>' +
+          '<text x="130" y="142" font-size="11" font-weight="700" text-anchor="middle" fill="#475569">x分後の水の量 ＝ y L</text>' +
+          '</svg>';
+      }
+
+      function svgCandle(initLen, burnText) {
+        return '<svg viewBox="0 0 260 145" xmlns="http://www.w3.org/2000/svg">' +
+          '<rect x="0" y="0" width="260" height="145" rx="10" fill="#ffffff" stroke="#e2e8f0"/>' +
+          '<rect x="112" y="48" width="36" height="74" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>' +
+          '<path d="M130 22 C137 32, 137 42, 130 45 C123 42, 123 32, 130 22 Z" fill="#f97316"/>' +
+          '<text x="64" y="88" font-size="12" font-weight="800" text-anchor="middle" fill="#0f172a">元の長さ</text>' +
+          '<text x="64" y="104" font-size="12" font-weight="800" text-anchor="middle" fill="#4f46e5">' + initLen + ' cm</text>' +
+          '<text x="202" y="82" font-size="11" font-weight="700" text-anchor="middle" fill="#b45309">' + burnText + '</text>' +
+          '<text x="130" y="137" font-size="11" font-weight="700" text-anchor="middle" fill="#475569">x分後の残りの長さ ＝ y cm</text>' +
+          '</svg>';
+      }
+
+      function svgSpring(initLen, perG) {
+        return '<svg viewBox="0 0 260 145" xmlns="http://www.w3.org/2000/svg">' +
+          '<rect x="0" y="0" width="260" height="145" rx="10" fill="#ffffff" stroke="#e2e8f0"/>' +
+          '<line x1="90" y1="18" x2="170" y2="18" stroke="#334155" stroke-width="4"/>' +
+          '<polyline points="130,18 130,28 118,36 142,46 118,56 142,66 130,74 130,84" fill="none" stroke="#4f46e5" stroke-width="2.5"/>' +
+          '<rect x="112" y="84" width="36" height="28" rx="4" fill="#e2e8f0" stroke="#334155" stroke-width="2"/>' +
+          '<text x="130" y="102" font-size="11" font-weight="800" text-anchor="middle" fill="#0f172a">x g</text>' +
+          '<text x="58" y="58" font-size="11" font-weight="700" text-anchor="middle" fill="#3730a3">自然長 ' + initLen + 'cm</text>' +
+          '<text x="202" y="58" font-size="11" font-weight="700" text-anchor="middle" fill="#059669">' + perG + '</text>' +
+          '<text x="130" y="132" font-size="11" font-weight="700" text-anchor="middle" fill="#475569">ばね全体の長さ ＝ y cm</text>' +
+          '</svg>';
+      }
+
+      function svgRectMovingLin(ab, bc, speed) {
+        return '<svg viewBox="0 0 260 155" xmlns="http://www.w3.org/2000/svg">' +
+          '<rect x="0" y="0" width="260" height="155" rx="10" fill="#ffffff" stroke="#e2e8f0"/>' +
+          '<rect x="45" y="28" width="160" height="88" fill="#f8fafc" stroke="#334155" stroke-width="2"/>' +
+          '<polygon points="45,28 205,28 205,76" fill="#fde68a" stroke="#d97706" stroke-width="2"/>' +
+          '<circle cx="205" cy="76" r="5" fill="#e11d48"/>' +
+          '<line x1="205" y1="66" x2="205" y2="42" stroke="#e11d48" stroke-width="2"/>' +
+          '<polygon points="205,39 201,47 209,47" fill="#e11d48"/>' +
+          '<text x="32" y="26" font-size="12" font-weight="700" fill="#0f172a">A</text>' +
+          '<text x="32" y="124" font-size="12" font-weight="700" fill="#0f172a">B</text>' +
+          '<text x="212" y="124" font-size="12" font-weight="700" fill="#0f172a">C</text>' +
+          '<text x="212" y="26" font-size="12" font-weight="700" fill="#0f172a">D</text>' +
+          '<text x="232" y="79" font-size="11" font-weight="800" text-anchor="middle" fill="#e11d48">P</text>' +
+          '<text x="125" y="21" font-size="11" font-weight="700" text-anchor="middle" fill="#334155">AD = ' + bc + 'cm</text>' +
+          '<text x="16" y="76" font-size="11" font-weight="700" fill="#334155">' + ab + 'cm</text>' +
+          '<text x="130" y="140" font-size="11" font-weight="700" text-anchor="middle" fill="#92400e">辺CD上をDへ向かう（毎秒' + speed + 'cm）</text>' +
+          '</svg>';
+      }
+
+      function svgSlopeBall(t1, d1) {
+        return '<svg viewBox="0 0 260 140" xmlns="http://www.w3.org/2000/svg">' +
+          '<rect x="0" y="0" width="260" height="140" rx="10" fill="#ffffff" stroke="#e2e8f0"/>' +
+          '<polygon points="30,36 30,114 230,114" fill="#eef2ff" stroke="#4f46e5" stroke-width="2"/>' +
+          '<circle cx="96" cy="54" r="9" fill="#059669" stroke="#ffffff" stroke-width="1.5"/>' +
+          '<line x1="112" y1="58" x2="155" y2="75" stroke="#e11d48" stroke-width="2"/>' +
+          '<polygon points="159,77 150,78 153,70" fill="#e11d48"/>' +
+          '<text x="152" y="42" font-size="12" font-weight="800" text-anchor="middle" fill="#3730a3">' + t1 + '秒で ' + d1 + 'm</text>' +
+          '<text x="130" y="131" font-size="11" font-weight="700" text-anchor="middle" fill="#475569">進む距離 y は x² に比例（y = ax²）</text>' +
+          '</svg>';
+      }
+
+      function svgCarBrake(v1, d1) {
+        return '<svg viewBox="0 0 260 135" xmlns="http://www.w3.org/2000/svg">' +
+          '<rect x="0" y="0" width="260" height="135" rx="10" fill="#ffffff" stroke="#e2e8f0"/>' +
+          '<line x1="24" y1="96" x2="236" y2="96" stroke="#334155" stroke-width="3"/>' +
+          '<rect x="44" y="66" width="54" height="22" rx="5" fill="#4f46e5"/>' +
+          '<circle cx="56" cy="90" r="6" fill="#0f172a"/>' +
+          '<circle cx="86" cy="90" r="6" fill="#0f172a"/>' +
+          '<line x1="106" y1="80" x2="216" y2="80" stroke="#e11d48" stroke-width="2.5" stroke-dasharray="6 3"/>' +
+          '<text x="160" y="68" font-size="11.5" font-weight="800" text-anchor="middle" fill="#e11d48">制動距離 y m</text>' +
+          '<text x="130" y="34" font-size="12" font-weight="800" text-anchor="middle" fill="#0f172a">時速 ' + v1 + 'km → ' + d1 + 'm で停止</text>' +
+          '<text x="130" y="120" font-size="11" font-weight="700" text-anchor="middle" fill="#475569">y は時速 x の2乗に比例（y = ax²）</text>' +
+          '</svg>';
+      }
+
+      function svgQuadTriangle(side, speed) {
+        return '<svg viewBox="0 0 260 150" xmlns="http://www.w3.org/2000/svg">' +
+          '<rect x="0" y="0" width="260" height="150" rx="10" fill="#ffffff" stroke="#e2e8f0"/>' +
+          '<polygon points="60,26 60,118 185,118" fill="#f8fafc" stroke="#334155" stroke-width="2"/>' +
+          '<polygon points="60,64 60,118 134,118" fill="#bbf7d0" stroke="#059669" stroke-width="2"/>' +
+          '<circle cx="60" cy="64" r="4.5" fill="#e11d48"/>' +
+          '<circle cx="134" cy="118" r="4.5" fill="#e11d48"/>' +
+          '<text x="44" y="28" font-size="12" font-weight="700" fill="#0f172a">A</text>' +
+          '<text x="44" y="124" font-size="12" font-weight="700" fill="#0f172a">B</text>' +
+          '<text x="192" y="124" font-size="12" font-weight="700" fill="#0f172a">C</text>' +
+          '<text x="42" y="68" font-size="11" font-weight="800" fill="#e11d48">Q</text>' +
+          '<text x="134" y="135" font-size="11" font-weight="800" text-anchor="middle" fill="#e11d48">P</text>' +
+          '<text x="160" y="54" font-size="11" font-weight="700" fill="#065f46">BP = BQ = ' + speed + 'x</text>' +
+          '<text x="160" y="72" font-size="11" font-weight="700" fill="#475569">AB = BC = ' + side + 'cm</text>' +
+          '</svg>';
+      }
+
+      /* =========================================================
+         5. 定数 & 状態管理
+      ========================================================= */
+      var GAS_URL = 'https://script.google.com/macros/s/AKfycbwn5pT3zsNajumvtbmhFzerWxVH7Huic0R_oGpzcYFM0ghajlx3uqMRimbcX5k7nzNh/exec';
+      var STORAGE_NAME_KEY = 'compass_func_student_name';
+      var STORAGE_QUEUE_KEY = 'compass_func_unsent_queue';
+
+      var UNIT_NAMES = { prop: '比例', inv: '反比例', lin: '一次関数', quad: '二次関数' };
+      var STEP_NAMES = {
+        s1: '1. グラフから式',
+        s2: '2. 式から値',
+        s3: '3. 変化の割合',
+        s4: '4. 変域',
+        s5: '5. 総合応用',
+        s6: '6. 文章題'
+      };
+      var STEP_SHORT = {
+        s1: 'グラフから式',
+        s2: '式から値',
+        s3: '変化の割合',
+        s4: '変域',
+        s5: '総合応用',
+        s6: '文章題'
+      };
+
+      var app = {
+        mode: 'practice', // 'practice' | 'test'
+        studentName: '',
+        unsentQueue: [],
+        studentModalCallback: null,
+        // 練習ver. 状態
+        pUnit: 'prop',
+        pStep: 's1',
+        scoreTotal: 0,
+        scoreStreak: 0,
+        visualOpen: true,
+        pQ: null,
+        wordSet: null,
+        wordSubIdx: 0,
+        wordSolved: [false, false, false],
+        wordEqRevealed: false,
+        pAnswered: false,
+        recentPracticeSigs: [],
+        practiceSession: {
+          total: 0,
+          correct: 0,
+          units: {},
+          steps: {},
+          mistakes: [],
+          startTime: Date.now(),
+          recordedCurrentQ: false
+        },
+        // テストver. 状態
+        testScreen: 'setup', // 'setup' | 'active' | 'result'
+        testCount: 10,
+        testConfig: { units: ['prop', 'inv', 'lin', 'quad'], steps: ['s1', 's2', 's3', 's4', 's5', 's6'], count: 10 },
+        testQuestions: [],
+        testRecords: [],
+        testIdx: 0,
+        testElapsed: 0,
+        testTimerId: null,
+        lastTestPayload: null,
+        // 現在のキーパッド入力先フィールド（縦組み分数対応）
+        fields: [],
+        activeFieldIdx: 0,
+        activePart: 'main', // 'main' | 'num' | 'den'
+        slotPrefix: 'p-'
+      };
+
+      /* =========================================================
+         5B. 生徒名管理 & GASスプレッドシート連携（未送信キュー付）
+      ========================================================= */
+      function loadStudentData() {
+        try {
+          var saved = localStorage.getItem(STORAGE_NAME_KEY);
+          if (saved) app.studentName = saved.trim();
+        } catch (e) {}
+        try {
+          var qRaw = localStorage.getItem(STORAGE_QUEUE_KEY);
+          if (qRaw) {
+            var parsed = JSON.parse(qRaw);
+            if (Array.isArray(parsed)) app.unsentQueue = parsed;
+          }
+        } catch (e) {}
+        updateStudentBadgeUI();
+        updateQueueBadgeUI();
+      }
+
+      function saveStudentName(name) {
+        app.studentName = (name || '').trim();
+        try {
+          if (app.studentName) localStorage.setItem(STORAGE_NAME_KEY, app.studentName);
+          else localStorage.removeItem(STORAGE_NAME_KEY);
+        } catch (e) {}
+        updateStudentBadgeUI();
+      }
+
+      function saveUnsentQueue() {
+        try {
+          localStorage.setItem(STORAGE_QUEUE_KEY, JSON.stringify(app.unsentQueue));
+        } catch (e) {}
+        updateQueueBadgeUI();
+      }
+
+      function updateStudentBadgeUI() {
+        var btn = $('student-badge-btn');
+        if (!btn) return;
+        if (app.studentName) {
+          btn.textContent = '👤 ' + app.studentName;
+          btn.classList.remove('unset');
+        } else {
+          btn.textContent = '👤 名前を設定';
+          btn.classList.add('unset');
+        }
+      }
+
+      function updateQueueBadgeUI() {
+        var btn = $('queue-retry-btn');
+        if (!btn) return;
+        var n = app.unsentQueue.length;
+        if (n > 0) {
+          btn.textContent = '⚠️ 未送信(' + n + ') 再送';
+          btn.classList.add('visible');
+        } else {
+          btn.classList.remove('visible');
+        }
+      }
+
+      function openStudentModal(opts) {
+        opts = opts || {};
+        $('student-modal-title').textContent = opts.title || '👤 生徒名・IDを登録';
+        $('student-modal-desc').textContent = opts.desc || 'スプレッドシートの成績記録に使用します（後からヘッダーでいつでも変更できます）。';
+        $('student-save-btn').textContent = opts.saveLabel || '保存する';
+        $('student-skip-btn').textContent = opts.skipLabel || 'スキップ';
+        $('student-name-input').value = app.studentName || '';
+        app.studentModalCallback = opts.onDone || null;
+        $('student-modal').classList.add('open');
+        setTimeout(function () {
+          try { $('student-name-input').focus(); } catch (e) {}
+        }, 50);
+      }
+
+      function closeStudentModal(runCallback) {
+        $('student-modal').classList.remove('open');
+        var cb = app.studentModalCallback;
+        app.studentModalCallback = null;
+        if (runCallback && typeof cb === 'function') cb();
+      }
+
+      function summarizeMistakes(list) {
+        if (!list || list.length === 0) return 'なし';
+        var counts = {};
+        var order = [];
+        for (var i = 0; i < list.length; i++) {
+          var key = list[i];
+          if (!counts[key]) { counts[key] = 0; order.push(key); }
+          counts[key]++;
+        }
+        return order.map(function (k) {
+          return counts[k] > 1 ? (k + '×' + counts[k]) : k;
+        }).join(', ');
+      }
+
+      function postPayloadToGas(payload) {
+        return fetch(GAS_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(payload)
+        }).then(function (res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.text().then(function (txt) {
+            try {
+              var obj = JSON.parse(txt);
+              if (obj && obj.status === 'error') throw new Error(obj.message || 'GAS error');
+            } catch (parseErr) {
+              if (parseErr && parseErr.message && parseErr.message.indexOf('GAS') === 0) throw parseErr;
+            }
+            return true;
+          });
+        });
+      }
+
+      function enqueuePayload(payload) {
+        app.unsentQueue.push(payload);
+        saveUnsentQueue();
+      }
+
+      function flushUnsentQueue() {
+        if (app.unsentQueue.length === 0) return Promise.resolve(0);
+        var btn = $('queue-retry-btn');
+        if (btn) btn.textContent = '⏳ 再送信中...';
+        var remaining = [];
+        var sentCount = 0;
+
+        var chain = Promise.resolve();
+        app.unsentQueue.forEach(function (item) {
+          chain = chain.then(function () {
+            return postPayloadToGas(item).then(function () {
+              sentCount++;
+            }).catch(function () {
+              remaining.push(item);
+            });
+          });
+        });
+
+        return chain.then(function () {
+          app.unsentQueue = remaining;
+          saveUnsentQueue();
+          var pStatus = $('practice-log-status');
+          if (sentCount > 0 && pStatus) {
+            pStatus.className = 'practice-log-status';
+            pStatus.textContent = '✅ 未送信データ ' + sentCount + ' 件を送信しました';
+          }
+          if (remaining.length === 0 && $('test-sync-banner').classList.contains('error')) {
+            setTestSyncBanner('success', '✅ 成績を記録しました');
+          }
+          return sentCount;
+        });
+      }
+
+      function setTestSyncBanner(state, text) {
+        var banner = $('test-sync-banner');
+        var textEl = $('test-sync-text');
+        var retryBtn = $('test-sync-retry-btn');
+        banner.className = 'sync-status-banner visible ' + state;
+        textEl.textContent = text;
+        retryBtn.style.display = (state === 'error') ? 'inline-block' : 'none';
+      }
+
+      function resetPracticeSession() {
+        app.practiceSession = {
+          total: 0,
+          correct: 0,
+          units: {},
+          steps: {},
+          mistakes: [],
+          startTime: Date.now(),
+          recordedCurrentQ: false
+        };
+        updatePracticeLogBarUI();
+      }
+
+      function updatePracticeLogBarUI() {
+        var ps = app.practiceSession;
+        $('practice-log-summary').textContent = '📊 練習記録：' + ps.total + '問中 ' + ps.correct + '問正解';
+        $('practice-send-btn').disabled = (ps.total === 0);
+      }
+
+      function sendPracticeSessionRecord() {
+        var ps = app.practiceSession;
+        if (ps.total === 0) return;
+
+        var unitKeys = Object.keys(ps.units);
+        var stepKeys = Object.keys(ps.steps);
+        var unitsStr = unitKeys.map(function (u) { return UNIT_NAMES[u]; }).join(', ') || UNIT_NAMES[app.pUnit];
+        var stepsStr = stepKeys.length === 6
+          ? '1〜6ミックス'
+          : (stepKeys.map(function (s) { return STEP_NAMES[s]; }).join(', ') || STEP_NAMES[app.pStep]);
+
+        var payload = {
+          studentName: app.studentName || '未入力',
+          mode: '練習',
+          units: unitsStr,
+          steps: stepsStr,
+          total: ps.total,
+          correct: ps.correct,
+          score: Math.round((ps.correct / ps.total) * 100),
+          timeSec: Math.max(1, Math.round((Date.now() - ps.startTime) / 1000)),
+          mistakes: summarizeMistakes(ps.mistakes)
+        };
+
+        var btn = $('practice-send-btn');
+        var statusEl = $('practice-log-status');
+        btn.disabled = true;
+        statusEl.className = 'practice-log-status';
+        statusEl.textContent = '⏳ スプレッドシートに送信中...';
+
+        postPayloadToGas(payload).then(function () {
+          resetPracticeSession();
+          statusEl.className = 'practice-log-status';
+          statusEl.textContent = '✅ 練習記録を送信しました！';
+        }).catch(function () {
+          enqueuePayload(payload);
+          resetPracticeSession();
+          statusEl.className = 'practice-log-status error';
+          statusEl.textContent = '⚠️ 送信失敗（上部ボタンから再送信できます）';
+        });
+      }
+
+      /* =========================================================
+         6. 各ステップの問題生成ロジック & 重複防止キー
+      ========================================================= */
+      function stripHtmlTags(html) {
+        return String(html || '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+      }
+
+      function fracKey(f) {
+        return f ? (f.n + '/' + f.d) : '';
+      }
+
+      // 問題を一意に識別するシグネチャを生成（完全重複防止用）
+      function getQuestionSignature(q) {
+        if (!q) return '';
+        var ansPart = '';
+        if (q.inputMode === 'eq') ansPart = fracKey(q.ansA) + '|' + fracKey(q.ansB);
+        else if (q.inputMode === 'val') ansPart = fracKey(q.ansVal) + '|' + (q.valLabel || '') + '|' + (q.valUnit || '');
+        else if (q.inputMode === 'range') ansPart = fracKey(q.ansMin) + '~' + fracKey(q.ansMax);
+        var qCore = stripHtmlTags(q.storyHtml) + '::' + stripHtmlTags(q.plainQuestionHtml || q.questionHtml);
+        return [q.unit, q.step, q.inputMode, qCore, ansPart].join('##');
+      }
+
+      // 隣り合う問題で同じテーマや同じ関数式が連続しないための類似キー
+      function getQuestionSimilarityKey(q) {
+        if (!q) return '';
+        if (q.step === 's6') return q.unit + '|s6|' + (q.themeKey || q.badge || '');
+        return q.unit + '|' + q.step + '|' + (q.eqKey || '');
+      }
+
+      function genS1(unit) {
+        var a, b = makeFrac(0, 1);
+        if (unit === 'prop') {
+          a = pick([makeFrac(1, 1), makeFrac(-1, 1), makeFrac(2, 1), makeFrac(-2, 1), makeFrac(3, 1), makeFrac(-3, 1), makeFrac(1, 2), makeFrac(-1, 2), makeFrac(1, 3), makeFrac(-1, 3), makeFrac(2, 3), makeFrac(-2, 3), makeFrac(3, 2), makeFrac(-3, 2)]);
+        } else if (unit === 'inv') {
+          a = makeFrac(pick([2, -2, 3, -3, 4, -4, 6, -6, 8, -8, 12, -12]), 1);
+        } else if (unit === 'lin') {
+          a = pick([makeFrac(1, 1), makeFrac(-1, 1), makeFrac(2, 1), makeFrac(-2, 1), makeFrac(3, 1), makeFrac(-3, 1), makeFrac(1, 2), makeFrac(-1, 2), makeFrac(2, 3), makeFrac(-2, 3), makeFrac(3, 2), makeFrac(-3, 2)]);
+          b = makeFrac(pick([-4, -3, -2, -1, 1, 2, 3, 4]), 1);
+        } else {
+          a = pick([makeFrac(1, 1), makeFrac(-1, 1), makeFrac(2, 1), makeFrac(-2, 1), makeFrac(1, 2), makeFrac(-1, 2), makeFrac(1, 4), makeFrac(-1, 4), makeFrac(1, 3), makeFrac(-1, 3)]);
+        }
+
+        var eqHtml = formatEquationHtml(unit, a, b);
+        var exp = '';
+        if (unit === 'prop') {
+          exp = '原点を通る直線なので <span class="math-expr">y</span> = <span class="math-expr">ax</span> の形です。グラフ上の格子点から傾きを求めると <strong>' + eqHtml + '</strong> になります。';
+        } else if (unit === 'inv') {
+          exp = '双曲線なので <span class="math-expr">y</span> = <span class="frac"><span class="frac-num">a</span><span class="frac-den">x</span></span> の形です。グラフ上の点の <span class="math-expr">x</span> と <span class="math-expr">y</span> をかけると ' + a.n + ' になるため、<strong>' + eqHtml + '</strong> です。';
+        } else if (unit === 'lin') {
+          exp = '切片（<span class="math-expr">y</span> 軸との交点）は ' + b.n + '、グラフの傾きは ' + renderFracHtml(a) + ' なので、式は <strong>' + eqHtml + '</strong> になります。';
+        } else {
+          exp = '原点を通る放物線なので <span class="math-expr">y</span> = <span class="math-expr">ax</span><sup>2</sup> の形です。グラフ上の点の座標を代入して <span class="math-expr">a</span> を求めると <strong>' + eqHtml + '</strong> になります。';
+        }
+
+        return {
+          unit: unit,
+          step: 's1',
+          eqKey: fracKey(a) + ',' + fracKey(b),
+          badge: UNIT_NAMES[unit] + '・グラフから式',
+          questionHtml: '次のグラフの式を求めなさい。',
+          inputMode: 'eq',
+          ansA: a,
+          ansB: b,
+          svgHtml: renderGraphSvg(unit, a, b, { showLattice: true }),
+          hintText: unit === 'lin'
+            ? 'まず y 軸との交点（切片）を読み取り、次に右へいくつ・上下へいくつ進んでいるか（傾き）を調べよう。'
+            : 'グラフが通るきりのよい点（格子点）を1つ見つけて、基本の式に代入してみよう。',
+          explanationHtml: exp,
+          defaultVisual: true
+        };
+      }
+
+      function genS2(unit) {
+        var askY = Math.random() < 0.5;
+        var a, b = makeFrac(0, 1), xVal, yVal;
+
+        if (unit === 'prop') {
+          a = pick([makeFrac(1, 1), makeFrac(-1, 1), makeFrac(2, 1), makeFrac(-2, 1), makeFrac(3, 1), makeFrac(-3, 1), makeFrac(1, 2), makeFrac(-1, 2), makeFrac(2, 3), makeFrac(-2, 3)]);
+          xVal = makeFrac(pick([-4, -3, -2, -1, 1, 2, 3, 4]) * a.d, 1);
+          yVal = fracMul(a, xVal);
+        } else if (unit === 'inv') {
+          var aInt = pick([6, -6, 8, -8, 12, -12, 16, -16, 18, -18, 24, -24]);
+          a = makeFrac(aInt, 1);
+          var divs = [];
+          for (var d = 1; d <= Math.abs(aInt); d++) {
+            if (Math.abs(aInt) % d === 0 && d <= 8) { divs.push(d); divs.push(-d); }
+          }
+          xVal = makeFrac(pick(divs), 1);
+          yVal = fracDiv(a, xVal);
+        } else if (unit === 'lin') {
+          a = pick([makeFrac(1, 1), makeFrac(-1, 1), makeFrac(2, 1), makeFrac(-2, 1), makeFrac(3, 1), makeFrac(-3, 1), makeFrac(1, 2), makeFrac(-1, 2), makeFrac(2, 3), makeFrac(-2, 3)]);
+          b = makeFrac(pick([-5, -4, -3, -2, -1, 1, 2, 3, 4, 5]), 1);
+          xVal = makeFrac(pick([-3, -2, -1, 1, 2, 3]) * a.d, 1);
+          yVal = fracAdd(fracMul(a, xVal), b);
+        } else {
+          a = pick([makeFrac(1, 1), makeFrac(-1, 1), makeFrac(2, 1), makeFrac(-2, 1), makeFrac(1, 2), makeFrac(-1, 2), makeFrac(1, 3), makeFrac(-1, 3)]);
+          var xBase = askY ? pick([-4, -3, -2, -1, 1, 2, 3, 4]) : pick([1, 2, 3, 4]);
+          if (a.d === 2 && xBase % 2 !== 0) xBase = 2;
+          if (a.d === 3 && xBase % 3 !== 0) xBase = 3;
+          xVal = makeFrac(xBase, 1);
+          yVal = fracMul(a, makeFrac(xBase * xBase, 1));
+        }
+
+        var eqHtml = formatEquationHtml(unit, a, b);
+        var qHtml = '', labelLeft = '', ansVal = null, exp = '';
+        if (askY) {
+          qHtml = eqHtml + ' について、<span class="math-expr">x</span> = ' + renderFracHtml(xVal) + ' のときの <span class="math-expr">y</span> の値を求めなさい。';
+          labelLeft = '<span class="math-expr">y</span> =';
+          ansVal = yVal;
+          exp = eqHtml + ' に <span class="math-expr">x</span> = ' + renderFracHtml(xVal) + ' を代入すると、<span class="math-expr">y</span> = <strong>' + renderFracHtml(yVal) + '</strong> になります。';
+        } else {
+          var cond = unit === 'quad' ? '（ただし <span class="math-expr">x</span> &gt; 0 とする）' : '';
+          qHtml = eqHtml + ' について、<span class="math-expr">y</span> = ' + renderFracHtml(yVal) + ' のときの <span class="math-expr">x</span> の値を求めなさい。' + cond;
+          labelLeft = '<span class="math-expr">x</span> =';
+          ansVal = xVal;
+          exp = eqHtml + ' に <span class="math-expr">y</span> = ' + renderFracHtml(yVal) + ' を代入して方程式を解くと、<span class="math-expr">x</span> = <strong>' + renderFracHtml(xVal) + '</strong> になります。';
+        }
+
+        return {
+          unit: unit,
+          step: 's2',
+          eqKey: fracKey(a) + ',' + fracKey(b),
+          badge: UNIT_NAMES[unit] + '・式から値',
+          questionHtml: qHtml,
+          inputMode: 'val',
+          valLabel: labelLeft,
+          valUnit: '',
+          ansVal: ansVal,
+          svgHtml: renderGraphSvg(unit, a, b, { points: [{ x: fracVal(xVal), y: fracVal(yVal) }] }),
+          hintText: askY ? '式の x のところに数値を代入して計算しよう（負の数の2乗や符号に注意）。' : '式の y のところに数値を代入して、x についての方程式を解こう。',
+          explanationHtml: exp,
+          defaultVisual: false
+        };
+      }
+
+      function genS3(unit) {
+        var a, b = makeFrac(0, 1), p, q, y1, y2, rate;
+        if (unit === 'prop' || unit === 'lin') {
+          a = pick([makeFrac(1, 1), makeFrac(-1, 1), makeFrac(2, 1), makeFrac(-2, 1), makeFrac(3, 1), makeFrac(-3, 1), makeFrac(1, 2), makeFrac(-1, 2), makeFrac(2, 3), makeFrac(-2, 3)]);
+          if (unit === 'lin') b = makeFrac(pick([-4, -2, -1, 1, 2, 3, 5]), 1);
+          p = randInt(-3, 2);
+          q = p + randInt(1, 4);
+          y1 = fracAdd(fracMul(a, makeFrac(p, 1)), b);
+          y2 = fracAdd(fracMul(a, makeFrac(q, 1)), b);
+          rate = a;
+        } else if (unit === 'inv') {
+          var ch = pick([
+            { a: 12, p: 1, q: 3 }, { a: 12, p: 2, q: 6 }, { a: 12, p: 2, q: 4 }, { a: 12, p: 1, q: 4 }, { a: 12, p: 3, q: 6 },
+            { a: -12, p: 1, q: 4 }, { a: -12, p: 2, q: 6 }, { a: -12, p: 1, q: 3 }, { a: -12, p: 2, q: 4 },
+            { a: 8, p: 1, q: 4 }, { a: 8, p: 2, q: 4 }, { a: -8, p: 2, q: 4 }, { a: -8, p: 1, q: 4 },
+            { a: 18, p: 2, q: 6 }, { a: 18, p: 3, q: 6 }, { a: -18, p: 2, q: 6 },
+            { a: 24, p: 2, q: 6 }, { a: 24, p: 3, q: 6 }, { a: 24, p: 4, q: 6 }, { a: -24, p: 2, q: 6 }
+          ]);
+          a = makeFrac(ch.a, 1);
+          p = ch.p; q = ch.q;
+          y1 = fracDiv(a, makeFrac(p, 1));
+          y2 = fracDiv(a, makeFrac(q, 1));
+          rate = fracDiv(fracSub(y2, y1), makeFrac(q - p, 1));
+        } else {
+          a = pick([makeFrac(1, 1), makeFrac(-1, 1), makeFrac(2, 1), makeFrac(-2, 1), makeFrac(1, 2), makeFrac(-1, 2), makeFrac(3, 1), makeFrac(-3, 1)]);
+          p = randInt(-3, 2);
+          q = p + randInt(1, 4);
+          y1 = fracMul(a, makeFrac(p * p, 1));
+          y2 = fracMul(a, makeFrac(q * q, 1));
+          rate = fracMul(a, makeFrac(p + q, 1));
+        }
+
+        var eqHtml = formatEquationHtml(unit, a, b);
+        var exp = '';
+        if (unit === 'prop' || unit === 'lin') {
+          exp = (unit === 'prop' ? '比例' : '一次関数') + 'では、変化の割合は常に傾き <span class="math-expr">a</span> と等しくなります。したがって答えは <strong>' + renderFracHtml(rate) + '</strong> です。';
+        } else if (unit === 'quad') {
+          exp = '二次関数 <span class="math-expr">y</span> = <span class="math-expr">ax</span><sup>2</sup> の変化の割合は <span class="math-expr">a</span>(<span class="math-expr">p</span> + <span class="math-expr">q</span>) ＝ ' + renderFracHtml(a) + ' × (' + p + ' + ' + q + ') ＝ <strong>' + renderFracHtml(rate) + '</strong> です。';
+        } else {
+          exp = '<span class="math-expr">x</span> = ' + p + ' のとき <span class="math-expr">y</span> = ' + renderFracHtml(y1) + '、<span class="math-expr">x</span> = ' + q + ' のとき <span class="math-expr">y</span> = ' + renderFracHtml(y2) + '。<br>変化の割合 ＝ (' + renderFracHtml(y2) + ' − (' + renderFracHtml(y1) + ')) ÷ (' + q + ' − ' + p + ') ＝ <strong>' + renderFracHtml(rate) + '</strong> です。';
+        }
+
+        return {
+          unit: unit,
+          step: 's3',
+          eqKey: fracKey(a) + ',' + fracKey(b),
+          badge: UNIT_NAMES[unit] + '・変化の割合',
+          questionHtml: eqHtml + ' について、<span class="math-expr">x</span> の値が ' + p + ' から ' + q + ' まで増加するときの変化の割合を求めなさい。',
+          inputMode: 'val',
+          valLabel: '変化の割合 =',
+          valUnit: '',
+          ansVal: rate,
+          svgHtml: renderGraphSvg(unit, a, b, { points: [{ x: p, y: fracVal(y1) }, { x: q, y: fracVal(y2) }] }),
+          hintText: '変化の割合 ＝ (yの増加量) ÷ (xの増加量) で計算しよう。二次関数なら a(p + q) も使えるよ！',
+          explanationHtml: exp,
+          defaultVisual: false
+        };
+      }
+
+      function genS4(unit) {
+        var a, b = makeFrac(0, 1), p, q, yMin, yMax, crossesZero = false;
+        if (unit === 'prop' || unit === 'lin') {
+          a = pick([makeFrac(1, 1), makeFrac(-1, 1), makeFrac(2, 1), makeFrac(-2, 1), makeFrac(3, 1), makeFrac(-3, 1), makeFrac(1, 2), makeFrac(-1, 2)]);
+          if (unit === 'lin') b = makeFrac(pick([-3, -2, -1, 1, 2, 3]), 1);
+          p = pick([-4, -2, 0, 2]);
+          q = p + pick([2, 4]);
+          var yp = fracAdd(fracMul(a, makeFrac(p, 1)), b);
+          var yq = fracAdd(fracMul(a, makeFrac(q, 1)), b);
+          if (fracVal(yp) <= fracVal(yq)) { yMin = yp; yMax = yq; } else { yMin = yq; yMax = yp; }
+        } else if (unit === 'inv') {
+          var ic = pick([
+            { a: 12, p: 2, q: 6 }, { a: 12, p: 3, q: 6 }, { a: 12, p: 2, q: 4 }, { a: 12, p: 1, q: 4 },
+            { a: -12, p: 2, q: 6 }, { a: -12, p: 3, q: 6 }, { a: -12, p: 2, q: 4 },
+            { a: 8, p: 2, q: 4 }, { a: 8, p: 1, q: 4 }, { a: -8, p: 1, q: 4 }, { a: -8, p: 2, q: 4 },
+            { a: 12, p: -6, q: -2 }, { a: -12, p: -6, q: -3 },
+            { a: 18, p: 2, q: 6 }, { a: 18, p: 3, q: 6 }, { a: 24, p: 3, q: 6 }, { a: 24, p: 4, q: 6 }
+          ]);
+          a = makeFrac(ic.a, 1);
+          p = ic.p; q = ic.q;
+          var iy1 = fracDiv(a, makeFrac(p, 1));
+          var iy2 = fracDiv(a, makeFrac(q, 1));
+          if (fracVal(iy1) <= fracVal(iy2)) { yMin = iy1; yMax = iy2; } else { yMin = iy2; yMax = iy1; }
+        } else {
+          a = pick([makeFrac(1, 1), makeFrac(-1, 1), makeFrac(2, 1), makeFrac(-2, 1), makeFrac(1, 2), makeFrac(-1, 2)]);
+          if (Math.random() < 0.65) {
+            crossesZero = true;
+            p = pick([-4, -2]);
+            q = pick([2, 4]);
+            if (p === -2 && q === 2) q = 4;
+          } else {
+            p = pick([1, 2]);
+            q = p + 2;
+          }
+          var cands = [fracMul(a, makeFrac(p * p, 1)), fracMul(a, makeFrac(q * q, 1))];
+          if (crossesZero) cands.push(makeFrac(0, 1));
+          yMin = cands[0]; yMax = cands[0];
+          for (var ci = 1; ci < cands.length; ci++) {
+            if (fracVal(cands[ci]) < fracVal(yMin)) yMin = cands[ci];
+            if (fracVal(cands[ci]) > fracVal(yMax)) yMax = cands[ci];
+          }
+        }
+
+        var r = Math.random();
+        var modeType = r < 0.4 ? 'range' : (r < 0.7 ? 'max' : 'min');
+        var eqHtml = formatEquationHtml(unit, a, b);
+        var domainText = p + ' ≦ <span class="math-expr">x</span> ≦ ' + q;
+        var qHtml = '';
+        if (modeType === 'range') {
+          qHtml = eqHtml + ' について、<span class="math-expr">x</span> の変域が ' + domainText + ' のとき、<strong><span class="math-expr">y</span> の変域</strong>を求めなさい。';
+        } else if (modeType === 'max') {
+          qHtml = eqHtml + ' について、<span class="math-expr">x</span> の変域が ' + domainText + ' のとき、<span class="math-expr">y</span> の<strong>最大値</strong>を求めなさい。';
+        } else {
+          qHtml = eqHtml + ' について、<span class="math-expr">x</span> の変域が ' + domainText + ' のとき、<span class="math-expr">y</span> の<strong>最小値</strong>を求めなさい。';
+        }
+
+        var hintText = (unit === 'quad' && crossesZero)
+          ? '⚠️ 注意！x の変域が 0 をまたいでいるよ！放物線は原点を通るため、y = 0 が最小値（a > 0）または最大値（a < 0）になるよ！'
+          : 'x の両端の値を代入して y の値を比べよう。a が負のときは大小が逆転するよ。';
+
+        var exp = 'この区間で <span class="math-expr">y</span> の最小値は ' + renderFracHtml(yMin) + '、最大値は ' + renderFracHtml(yMax) + ' なので、変域は <strong>' + renderFracHtml(yMin) + ' ≦ <span class="math-expr">y</span> ≦ ' + renderFracHtml(yMax) + '</strong> です。';
+        if (unit === 'quad' && crossesZero) {
+          exp = '<span class="math-expr">x</span> の変域が 0 をまたぐため、頂点（<span class="math-expr">x</span> = 0, <span class="math-expr">y</span> = 0）が' + (a.n > 0 ? '最小値' : '最大値') + 'になります。<br>' + exp;
+        }
+
+        var obj = {
+          unit: unit,
+          step: 's4',
+          eqKey: fracKey(a) + ',' + fracKey(b),
+          badge: UNIT_NAMES[unit] + '・変域',
+          questionHtml: qHtml,
+          svgHtml: renderGraphSvg(unit, a, b, {}),
+          hintText: hintText,
+          explanationHtml: exp,
+          defaultVisual: false
+        };
+        if (modeType === 'range') {
+          obj.inputMode = 'range'; obj.ansMin = yMin; obj.ansMax = yMax;
+        } else if (modeType === 'max') {
+          obj.inputMode = 'val'; obj.valLabel = '最大値 ='; obj.valUnit = ''; obj.ansVal = yMax;
+        } else {
+          obj.inputMode = 'val'; obj.valLabel = '最小値 ='; obj.valUnit = ''; obj.ansVal = yMin;
+        }
+        return obj;
+      }
+
+      function genS5(unit) {
+        var askEqOnly = Math.random() < 0.5;
+        var a, b = makeFrac(0, 1), x1, y1, x2, y2, xT, yT, pts = [], condText = '';
+
+        if (unit === 'prop') {
+          a = pick([makeFrac(1, 1), makeFrac(-1, 1), makeFrac(2, 1), makeFrac(-2, 1), makeFrac(3, 1), makeFrac(-3, 1), makeFrac(1, 2), makeFrac(-1, 2), makeFrac(2, 3), makeFrac(-2, 3)]);
+          x1 = pick([-3, -2, 2, 3]) * a.d;
+          y1 = fracMul(a, makeFrac(x1, 1));
+          pts.push({ x: x1, y: fracVal(y1) });
+          condText = '<span class="math-expr">y</span> は <span class="math-expr">x</span> に比例し、点 (' + x1 + ', ' + renderFracHtml(y1) + ') を通る。';
+          xT = pick([-4, -1, 1, 4]) * a.d;
+          if (xT === x1) xT = -x1;
+          yT = fracMul(a, makeFrac(xT, 1));
+        } else if (unit === 'inv') {
+          var aInt = pick([6, -6, 8, -8, 12, -12, 18, -18, 24, -24]);
+          a = makeFrac(aInt, 1);
+          var divs = [];
+          for (var d = 1; d <= 6; d++) {
+            if (Math.abs(aInt) % d === 0) { divs.push(d); divs.push(-d); }
+          }
+          x1 = pick(divs);
+          y1 = fracDiv(a, makeFrac(x1, 1));
+          pts.push({ x: x1, y: fracVal(y1) });
+          condText = '<span class="math-expr">y</span> は <span class="math-expr">x</span> に反比例し、点 (' + x1 + ', ' + renderFracHtml(y1) + ') を通る。';
+          var others = divs.filter(function (v) { return v !== x1; });
+          xT = others.length ? pick(others) : -x1;
+          yT = fracDiv(a, makeFrac(xT, 1));
+        } else if (unit === 'lin') {
+          a = pick([makeFrac(1, 1), makeFrac(-1, 1), makeFrac(2, 1), makeFrac(-2, 1), makeFrac(3, 1), makeFrac(-3, 1), makeFrac(1, 2), makeFrac(-1, 2)]);
+          b = makeFrac(pick([-4, -3, -2, -1, 1, 2, 3, 4]), 1);
+          x1 = pick([-2, 0, 2]);
+          x2 = x1 + pick([2, 4]);
+          y1 = fracAdd(fracMul(a, makeFrac(x1, 1)), b);
+          y2 = fracAdd(fracMul(a, makeFrac(x2, 1)), b);
+          pts.push({ x: x1, y: fracVal(y1) }, { x: x2, y: fracVal(y2) });
+          condText = '2点 (' + x1 + ', ' + renderFracHtml(y1) + '), (' + x2 + ', ' + renderFracHtml(y2) + ') を通る一次関数がある。';
+          xT = pick([-4, -2, 2, 4]);
+          if (xT === x1 || xT === x2) xT = -4;
+          yT = fracAdd(fracMul(a, makeFrac(xT, 1)), b);
+        } else {
+          a = pick([makeFrac(1, 1), makeFrac(-1, 1), makeFrac(2, 1), makeFrac(-2, 1), makeFrac(1, 2), makeFrac(-1, 2)]);
+          x1 = (a.d === 2) ? pick([-2, 2]) : pick([-3, -2, 2, 3]);
+          y1 = fracMul(a, makeFrac(x1 * x1, 1));
+          pts.push({ x: x1, y: fracVal(y1) });
+          condText = '<span class="math-expr">y</span> は <span class="math-expr">x</span> の2乗に比例し、点 (' + x1 + ', ' + renderFracHtml(y1) + ') を通る。';
+          xT = (a.d === 2) ? 4 : pick([1, 2, 3, 4]);
+          if (xT === Math.abs(x1)) xT = (a.d === 2) ? 4 : (xT === 2 ? 3 : 2);
+          yT = fracMul(a, makeFrac(xT * xT, 1));
+        }
+
+        var eqHtml = formatEquationHtml(unit, a, b);
+        if (askEqOnly) {
+          return {
+            unit: unit,
+            step: 's5',
+            eqKey: fracKey(a) + ',' + fracKey(b),
+            badge: UNIT_NAMES[unit] + '・総合応用（座標→式）',
+            questionHtml: condText + '<br>この関数の式を求めなさい。',
+            inputMode: 'eq',
+            ansA: a,
+            ansB: b,
+            svgHtml: renderGraphSvg(unit, a, b, { points: pts }),
+            hintText: unit === 'lin'
+              ? '2点の座標から、まず傾き a = (yの増加量) ÷ (xの増加量) を求め、次に1点を代入して切片 b を求めよう。'
+              : '基本の式に座標 (x, y) を代入して、比例定数 a を求めよう。',
+            explanationHtml: '与えられた座標を基本の式に代入して計算すると、式は <strong>' + eqHtml + '</strong> になります。',
+            defaultVisual: false
+          };
+        }
+
+        var askYVal = Math.random() < 0.5;
+        if (askYVal) {
+          return {
+            unit: unit,
+            step: 's5',
+            eqKey: fracKey(a) + ',' + fracKey(b),
+            badge: UNIT_NAMES[unit] + '・総合応用（式→値）',
+            questionHtml: condText + '<br>このとき、<span class="math-expr">x</span> = ' + xT + ' のときの <span class="math-expr">y</span> の値を求めなさい。',
+            inputMode: 'val',
+            valLabel: '<span class="math-expr">y</span> =',
+            valUnit: '',
+            ansVal: yT,
+            svgHtml: renderGraphSvg(unit, a, b, { points: pts }),
+            hintText: '2ステップで考えよう：① 座標から関数の式を求める → ② 求めた式に x = ' + xT + ' を代入する！',
+            explanationHtml: 'まず与えられた座標から式を求めると <strong>' + eqHtml + '</strong>。<br>これに <span class="math-expr">x</span> = ' + xT + ' を代入して、<span class="math-expr">y</span> = <strong>' + renderFracHtml(yT) + '</strong> です。',
+            defaultVisual: false
+          };
+        }
+
+        var extra = (unit === 'quad') ? '（ただし <span class="math-expr">x</span> &gt; 0 とする）' : '';
+        return {
+          unit: unit,
+          step: 's5',
+          eqKey: fracKey(a) + ',' + fracKey(b),
+          badge: UNIT_NAMES[unit] + '・総合応用（式→値）',
+          questionHtml: condText + '<br>このとき、<span class="math-expr">y</span> = ' + renderFracHtml(yT) + ' のときの <span class="math-expr">x</span> の値を求めなさい。' + extra,
+          inputMode: 'val',
+          valLabel: '<span class="math-expr">x</span> =',
+          valUnit: '',
+          ansVal: makeFrac(xT, 1),
+          svgHtml: renderGraphSvg(unit, a, b, { points: pts }),
+          hintText: '2ステップで考えよう：① 座標から関数の式を求める → ② 求めた式に y の値を代入して解く！',
+          explanationHtml: 'まず与えられた座標から式を求めると <strong>' + eqHtml + '</strong>。<br>これに <span class="math-expr">y</span> = ' + renderFracHtml(yT) + ' を代入して解くと、<span class="math-expr">x</span> = <strong>' + xT + '</strong> です。',
+          defaultVisual: false
+        };
+      }
+
+      /* =========================================================
+         7. ステップ6：文章題（14テーマ）
+      ========================================================= */
+      function buildWordProblemSet(unit) {
+        var themeIdx, badge, storyHtml, eqHtml, diagramSvg, aFrac, bFrac = makeFrac(0, 1);
+        var q1Exp, subValA, subValB;
+
+        if (unit === 'prop') {
+          themeIdx = randInt(0, 3);
+          if (themeIdx === 0) {
+            var ab = pick([4, 6, 8]), speed = pick([1, 2]), bc = speed * pick([6, 8, 10]);
+            var maxT = bc / speed, coef = (ab * speed) / 2;
+            aFrac = makeFrac(coef, 1);
+            var t1 = randInt(2, maxT - 2), t2 = (t1 + 1 <= maxT ? t1 + 1 : 2);
+            badge = '比例・文章題（動点と面積）';
+            storyHtml = '縦 ' + ab + 'cm、横 ' + bc + 'cm の長方形 ABCD で、点 P は頂点 B を出発して辺 BC 上を C まで毎秒 ' + speed + 'cm の速さで動く。出発してから <span class="math-expr">x</span> 秒後の △ABP の面積を <span class="math-expr">y</span> cm<sup>2</sup> とする。';
+            diagramSvg = svgRectMovingProp(ab, bc, speed);
+            eqHtml = formatEquationHtml('prop', aFrac);
+            q1Exp = '底辺 BP ＝ ' + speed + '<span class="math-expr">x</span> cm、高さ AB ＝ ' + ab + ' cm より、<span class="math-expr">y</span> = <span class="frac"><span class="frac-num">1</span><span class="frac-den">2</span></span> × ' + speed + '<span class="math-expr">x</span> × ' + ab + ' = <strong>' + eqHtml + '</strong>。';
+            subValA = { q: '出発してから ' + t1 + ' 秒後の △ABP の面積を求めなさい。', unitStr: 'cm²', ans: makeFrac(coef * t1, 1), hint: '求めるのは面積（y）だよ。(1) の式に x = ' + t1 + ' を代入しよう。', exp: '求めるのは面積（<span class="math-expr">y</span>）なので、' + eqHtml + ' に <span class="math-expr">x</span> = ' + t1 + ' を代入します。<br>' + coef + ' × ' + t1 + ' = <strong>' + (coef * t1) + ' cm²</strong>。' };
+            subValB = { q: '△ABP の面積が ' + (coef * t2) + ' cm<sup>2</sup> になるのは出発してから何秒後か求めなさい。', unitStr: '秒後', ans: makeFrac(t2, 1), hint: '求めるのは時間（x）だよ。(1) の式に y = ' + (coef * t2) + ' を代入して解こう。', exp: '求めるのは時間（<span class="math-expr">x</span>）なので、' + eqHtml + ' に <span class="math-expr">y</span> = ' + (coef * t2) + ' を代入します。<br>' + (coef * t2) + ' = ' + coef + '<span class="math-expr">x</span> を解いて、<strong>' + t2 + ' 秒後</strong>。' };
+          } else if (themeIdx === 1) {
+            var ratio = pick([2, 3, 4]), teethB = pick([8, 10, 12]), teethA = teethB * ratio;
+            aFrac = makeFrac(ratio, 1);
+            var rot1 = randInt(2, 6), rot2 = rot1 + randInt(2, 4);
+            badge = '比例・文章題（歯車）';
+            storyHtml = '歯数が ' + teethA + ' の歯車 A と、歯数が ' + teethB + ' の歯車 B がかみ合っている。歯車 A が <span class="math-expr">x</span> 回転するとき、歯車 B は <span class="math-expr">y</span> 回転するものとする。';
+            diagramSvg = svgGears('A: ' + teethA + '歯', 'B: ' + teethB + '歯', 'Aの回転数 x と Bの回転数 y');
+            eqHtml = formatEquationHtml('prop', aFrac);
+            q1Exp = 'かみ合う歯の数は等しいので ' + teethA + '<span class="math-expr">x</span> = ' + teethB + '<span class="math-expr">y</span>。両辺を ' + teethB + ' で割ると <strong>' + eqHtml + '</strong>。';
+            subValA = { q: '歯車 A が ' + rot1 + ' 回転するとき、歯車 B は何回転するか求めなさい。', unitStr: '回転', ans: makeFrac(ratio * rot1, 1), hint: '求めるのは歯車 B の回転数（y）だよ。(1) の式に x = ' + rot1 + ' を代入しよう。', exp: '求めるのは歯車 B の回転数（<span class="math-expr">y</span>）なので、' + eqHtml + ' に <span class="math-expr">x</span> = ' + rot1 + ' を代入します。<br>' + ratio + ' × ' + rot1 + ' = <strong>' + (ratio * rot1) + ' 回転</strong>。' };
+            subValB = { q: '歯車 B が ' + (ratio * rot2) + ' 回転するとき、歯車 A は何回転したか求めなさい。', unitStr: '回転', ans: makeFrac(rot2, 1), hint: '求めるのは歯車 A の回転数（x）だよ。(1) の式に y = ' + (ratio * rot2) + ' を代入して解こう。', exp: '求めるのは歯車 A の回転数（<span class="math-expr">x</span>）なので、' + eqHtml + ' に <span class="math-expr">y</span> = ' + (ratio * rot2) + ' を代入します。<br>' + (ratio * rot2) + ' = ' + ratio + '<span class="math-expr">x</span> を解いて、<strong>' + rot2 + ' 回転</strong>。' };
+          } else if (themeIdx === 2) {
+            var perNail = pick([3, 4, 5, 6]), sampleN = pick([10, 15, 20]), sampleW = perNail * sampleN;
+            aFrac = makeFrac(perNail, 1);
+            var n1 = pick([25, 30, 40]), n2 = pick([35, 50, 60]);
+            badge = '比例・文章題（くぎの重さ）';
+            storyHtml = '同じ種類のくぎを ' + sampleN + ' 本はかったら ' + sampleW + 'g あった。このくぎ <span class="math-expr">x</span> 本の重さを <span class="math-expr">y</span> g とする。';
+            diagramSvg = svgScaleNails(sampleN, sampleW);
+            eqHtml = formatEquationHtml('prop', aFrac);
+            q1Exp = 'くぎ 1 本の重さは ' + sampleW + ' ÷ ' + sampleN + ' = ' + perNail + ' g なので、<strong>' + eqHtml + '</strong>。';
+            subValA = { q: 'このくぎ ' + n1 + ' 本の重さは何 g か求めなさい。', unitStr: 'g', ans: makeFrac(perNail * n1, 1), hint: '求めるのは重さ（y）だよ。(1) の式に x = ' + n1 + ' を代入しよう。', exp: '求めるのは重さ（<span class="math-expr">y</span>）なので、' + eqHtml + ' に <span class="math-expr">x</span> = ' + n1 + ' を代入します。<br>' + perNail + ' × ' + n1 + ' = <strong>' + (perNail * n1) + ' g</strong>。' };
+            subValB = { q: '重さが ' + (perNail * n2) + 'g のとき、くぎは何本あるか求めなさい。', unitStr: '本', ans: makeFrac(n2, 1), hint: '求めるのは本数（x）だよ。(1) の式に y = ' + (perNail * n2) + ' を代入して解こう。', exp: '求めるのは本数（<span class="math-expr">x</span>）なので、' + eqHtml + ' に <span class="math-expr">y</span> = ' + (perNail * n2) + ' を代入します。<br>' + (perNail * n2) + ' ÷ ' + perNail + ' = <strong>' + n2 + ' 本</strong>。' };
+          } else {
+            var spd = pick([60, 70, 80, 90]);
+            aFrac = makeFrac(spd, 1);
+            var m1 = pick([4, 5, 6]), m2 = pick([7, 8, 10]);
+            badge = '比例・文章題（速さと道のり）';
+            storyHtml = '毎分 ' + spd + 'm の速さで歩くとき、<span class="math-expr">x</span> 分間に進む道のりを <span class="math-expr">y</span> m とする。';
+            diagramSvg = svgRoadSpeed('毎分 ' + spd + ' m で進む', '道のり y ＝ 速さ × 時間 x');
+            eqHtml = formatEquationHtml('prop', aFrac);
+            q1Exp = '道のり ＝ 速さ × 時間 より、<strong>' + eqHtml + '</strong>。';
+            subValA = { q: m1 + ' 分間に進む道のりは何 m か求めなさい。', unitStr: 'm', ans: makeFrac(spd * m1, 1), hint: '求めるのは道のり（y）だよ。(1) の式に x = ' + m1 + ' を代入しよう。', exp: '求めるのは道のり（<span class="math-expr">y</span>）なので、' + eqHtml + ' に <span class="math-expr">x</span> = ' + m1 + ' を代入します。<br>' + spd + ' × ' + m1 + ' = <strong>' + (spd * m1) + ' m</strong>。' };
+            subValB = { q: (spd * m2) + 'm 進むのに何分かかるか求めなさい。', unitStr: '分', ans: makeFrac(m2, 1), hint: '求めるのは時間（x）だよ。(1) の式に y = ' + (spd * m2) + ' を代入して解こう。', exp: '求めるのは時間（<span class="math-expr">x</span>）なので、' + eqHtml + ' に <span class="math-expr">y</span> = ' + (spd * m2) + ' を代入します。<br>' + (spd * m2) + ' ÷ ' + spd + ' = <strong>' + m2 + ' 分</strong>。' };
+          }
+        } else if (unit === 'inv') {
+          themeIdx = randInt(0, 2);
+          if (themeIdx === 0) {
+            var gc = pick([{ aT: 24, aR: 5, prod: 120, x1: 20, y2: 10 }, { aT: 20, aR: 6, prod: 120, x1: 15, y2: 4 }, { aT: 18, aR: 4, prod: 72, x1: 12, y2: 9 }, { aT: 16, aR: 6, prod: 96, x1: 12, y2: 4 }]);
+            aFrac = makeFrac(gc.prod, 1);
+            badge = '反比例・文章題（歯車）';
+            storyHtml = '歯数が ' + gc.aT + ' の歯車 A が ' + gc.aR + ' 回転するとき、かみ合う歯車 B（歯数 <span class="math-expr">x</span>）は <span class="math-expr">y</span> 回転するものとする。';
+            diagramSvg = svgGears('A: ' + gc.aT + '歯(' + gc.aR + '回転)', 'B: x歯(y回転)', '歯数 × 回転数 ＝ ' + gc.prod + ' (一定)');
+            eqHtml = formatEquationHtml('inv', aFrac);
+            q1Exp = '歯数 × 回転数 が一定なので <span class="math-expr">xy</span> = ' + gc.prod + '。よって <strong>' + eqHtml + '</strong>。';
+            subValA = { q: '歯車 B の歯数が ' + gc.x1 + ' のとき、歯車 B は何回転するか求めなさい。', unitStr: '回転', ans: makeFrac(gc.prod / gc.x1, 1), hint: '求めるのは回転数（y）だよ。(1) の式に x = ' + gc.x1 + ' を代入しよう。', exp: '求めるのは歯車 B の回転数（<span class="math-expr">y</span>）なので、' + eqHtml + ' に <span class="math-expr">x</span> = ' + gc.x1 + ' を代入します。<br>' + gc.prod + ' ÷ ' + gc.x1 + ' = <strong>' + (gc.prod / gc.x1) + ' 回転</strong>。' };
+            subValB = { q: '歯車 B が ' + gc.y2 + ' 回転するとき、歯車 B の歯数はいくつか求めなさい。', unitStr: '歯', ans: makeFrac(gc.prod / gc.y2, 1), hint: '求めるのは歯数（x）だよ。xy = ' + gc.prod + ' に y = ' + gc.y2 + ' を代入しよう。', exp: '求めるのは歯車 B の歯数（<span class="math-expr">x</span>）なので、<span class="math-expr">xy</span> = ' + gc.prod + ' に <span class="math-expr">y</span> = ' + gc.y2 + ' を代入します。<br>' + gc.prod + ' ÷ ' + gc.y2 + ' = <strong>' + (gc.prod / gc.y2) + ' 歯</strong>。' };
+          } else if (themeIdx === 1) {
+            var rc = pick([{ area: 36, x1: 4, y2: 3 }, { area: 48, x1: 6, y2: 4 }, { area: 60, x1: 5, y2: 6 }, { area: 24, x1: 3, y2: 4 }]);
+            aFrac = makeFrac(rc.area, 1);
+            badge = '反比例・文章題（長方形の面積）';
+            storyHtml = '面積が ' + rc.area + ' cm<sup>2</sup> の長方形で、縦の長さを <span class="math-expr">x</span> cm、横の長さを <span class="math-expr">y</span> cm とする。';
+            diagramSvg = svgRectArea(rc.area);
+            eqHtml = formatEquationHtml('inv', aFrac);
+            q1Exp = '縦 × 横 ＝ 面積 より <span class="math-expr">xy</span> = ' + rc.area + '。したがって <strong>' + eqHtml + '</strong>。';
+            subValA = { q: '縦の長さが ' + rc.x1 + ' cm のとき、横の長さは何 cm か求めなさい。', unitStr: 'cm', ans: makeFrac(rc.area / rc.x1, 1), hint: '求めるのは横の長さ（y）だよ。(1) の式に x = ' + rc.x1 + ' を代入しよう。', exp: '求めるのは横の長さ（<span class="math-expr">y</span>）なので、' + eqHtml + ' に <span class="math-expr">x</span> = ' + rc.x1 + ' を代入します。<br>' + rc.area + ' ÷ ' + rc.x1 + ' = <strong>' + (rc.area / rc.x1) + ' cm</strong>。' };
+            subValB = { q: '横の長さが ' + rc.y2 + ' cm のとき、縦の長さは何 cm か求めなさい。', unitStr: 'cm', ans: makeFrac(rc.area / rc.y2, 1), hint: '求めるのは縦の長さ（x）だよ。xy = ' + rc.area + ' に y = ' + rc.y2 + ' を代入しよう。', exp: '求めるのは縦の長さ（<span class="math-expr">x</span>）なので、<span class="math-expr">xy</span> = ' + rc.area + ' に <span class="math-expr">y</span> = ' + rc.y2 + ' を代入します。<br>' + rc.area + ' ÷ ' + rc.y2 + ' = <strong>' + (rc.area / rc.y2) + ' cm</strong>。' };
+          } else {
+            var sc = pick([{ dist: 1200, x1: 60, y2: 15 }, { dist: 1800, x1: 90, y2: 15 }, { dist: 2400, x1: 80, y2: 20 }]);
+            aFrac = makeFrac(sc.dist, 1);
+            badge = '反比例・文章題（速さと時間）';
+            storyHtml = sc.dist + 'm の道のりを毎分 <span class="math-expr">x</span> m の速さで進むとき、かかる時間を <span class="math-expr">y</span> 分とする。';
+            diagramSvg = svgRoadSpeed('道のり ' + sc.dist + ' m（一定）', '速さ x × 時間 y ＝ ' + sc.dist);
+            eqHtml = formatEquationHtml('inv', aFrac);
+            q1Exp = '時間 ＝ 道のり ÷ 速さ より、<strong>' + eqHtml + '</strong>。';
+            subValA = { q: '毎分 ' + sc.x1 + 'm の速さで進むとき、何分かかるか求めなさい。', unitStr: '分', ans: makeFrac(sc.dist / sc.x1, 1), hint: '求めるのはかかる時間（y）だよ。(1) の式に x = ' + sc.x1 + ' を代入しよう。', exp: '求めるのはかかる時間（<span class="math-expr">y</span>）なので、' + eqHtml + ' に <span class="math-expr">x</span> = ' + sc.x1 + ' を代入します。<br>' + sc.dist + ' ÷ ' + sc.x1 + ' = <strong>' + (sc.dist / sc.x1) + ' 分</strong>。' };
+            subValB = { q: sc.y2 + ' 分で着くには、毎分何 m の速さで進めばよいか求めなさい。', unitStr: 'm', ans: makeFrac(sc.dist / sc.y2, 1), hint: '求めるのは速さ（x）だよ。xy = ' + sc.dist + ' に y = ' + sc.y2 + ' を代入しよう。', exp: '求めるのは速さ（<span class="math-expr">x</span>）なので、<span class="math-expr">xy</span> = ' + sc.dist + ' に <span class="math-expr">y</span> = ' + sc.y2 + ' を代入します。<br>' + sc.dist + ' ÷ ' + sc.y2 + ' = <strong>毎分 ' + (sc.dist / sc.y2) + ' m</strong>。' };
+          }
+        } else if (unit === 'lin') {
+          themeIdx = randInt(0, 3);
+          if (themeIdx === 0) {
+            var isInc = Math.random() < 0.5;
+            if (isInc) {
+              var initL = pick([8, 10, 12, 15]), rate = pick([2, 3, 4]);
+              aFrac = makeFrac(rate, 1); bFrac = makeFrac(initL, 1);
+              var t1i = pick([4, 5, 6]), t2i = pick([7, 8, 10]);
+              badge = '一次関数・文章題（水槽・給水）';
+              storyHtml = 'はじめに ' + initL + 'L の水が入っている水槽に、毎分 ' + rate + 'L の割合で水を入れる。水を入れ始めてから <span class="math-expr">x</span> 分後の水の量を <span class="math-expr">y</span> L とする。';
+              diagramSvg = svgWaterTank(initL, rate, true);
+              eqHtml = formatEquationHtml('lin', aFrac, bFrac);
+              q1Exp = 'はじめの量（切片）が ' + initL + '、1分あたり +' + rate + 'L（傾き）なので、<strong>' + eqHtml + '</strong>。';
+              subValA = { q: t1i + ' 分後の水槽の水の量は何 L か求めなさい。', unitStr: 'L', ans: makeFrac(rate * t1i + initL, 1), hint: '求めるのは水の量（y）だよ。(1) の式に x = ' + t1i + ' を代入しよう。', exp: '求めるのは水の量（<span class="math-expr">y</span>）なので、' + eqHtml + ' に <span class="math-expr">x</span> = ' + t1i + ' を代入します。<br>' + rate + ' × ' + t1i + ' + ' + initL + ' = <strong>' + (rate * t1i + initL) + ' L</strong>。' };
+              subValB = { q: '水の量が ' + (rate * t2i + initL) + 'L になるのは何分後か求めなさい。', unitStr: '分後', ans: makeFrac(t2i, 1), hint: '求めるのは時間（x）だよ。(1) の式に y = ' + (rate * t2i + initL) + ' を代入して解こう。', exp: '求めるのは時間（<span class="math-expr">x</span>）なので、' + eqHtml + ' に <span class="math-expr">y</span> = ' + (rate * t2i + initL) + ' を代入します。<br>' + rate + '<span class="math-expr">x</span> + ' + initL + ' = ' + (rate * t2i + initL) + ' を解いて、<strong>' + t2i + ' 分後</strong>。' };
+            } else {
+              var rateD = pick([2, 3, 4]), initLD = rateD * pick([10, 12, 15]);
+              aFrac = makeFrac(-rateD, 1); bFrac = makeFrac(initLD, 1);
+              var td1 = pick([3, 4, 5]), td2 = pick([6, 8, 9]);
+              badge = '一次関数・文章題（水槽・排水）';
+              storyHtml = 'はじめに ' + initLD + 'L の水が入っている水槽から、毎分 ' + rateD + 'L の割合で水をぬく。水をぬき始めてから <span class="math-expr">x</span> 分後の残りの水の量を <span class="math-expr">y</span> L とする。';
+              diagramSvg = svgWaterTank(initLD, rateD, false);
+              eqHtml = formatEquationHtml('lin', aFrac, bFrac);
+              q1Exp = 'はじめの量（切片）が ' + initLD + '、1分あたり ' + rateD + 'L 減る（傾き −' + rateD + '）ので、<strong>' + eqHtml + '</strong>。';
+              subValA = { q: td1 + ' 分後に残っている水の量は何 L か求めなさい。', unitStr: 'L', ans: makeFrac(initLD - rateD * td1, 1), hint: '求めるのは残りの水の量（y）だよ。(1) の式に x = ' + td1 + ' を代入しよう。', exp: '求めるのは残りの水の量（<span class="math-expr">y</span>）なので、' + eqHtml + ' に <span class="math-expr">x</span> = ' + td1 + ' を代入します。<br>−' + rateD + ' × ' + td1 + ' + ' + initLD + ' = <strong>' + (initLD - rateD * td1) + ' L</strong>。' };
+              subValB = { q: '残りの水の量が ' + (initLD - rateD * td2) + 'L になるのは何分後か求めなさい。', unitStr: '分後', ans: makeFrac(td2, 1), hint: '求めるのは時間（x）だよ。(1) の式に y = ' + (initLD - rateD * td2) + ' を代入して解こう。', exp: '求めるのは時間（<span class="math-expr">x</span>）なので、' + eqHtml + ' に <span class="math-expr">y</span> = ' + (initLD - rateD * td2) + ' を代入します。<br>−' + rateD + '<span class="math-expr">x</span> + ' + initLD + ' = ' + (initLD - rateD * td2) + ' を解いて、<strong>' + td2 + ' 分後</strong>。' };
+            }
+          } else if (themeIdx === 1) {
+            var cc = pick([{ len: 20, min: 2, cm: 1, a: makeFrac(-1, 2), t1: 8, t2: 14 }, { len: 24, min: 3, cm: 2, a: makeFrac(-2, 3), t1: 9, t2: 18 }, { len: 18, min: 1, cm: 1, a: makeFrac(-1, 1), t1: 5, t2: 12 }]);
+            aFrac = cc.a; bFrac = makeFrac(cc.len, 1);
+            var yAt1 = fracAdd(fracMul(aFrac, makeFrac(cc.t1, 1)), bFrac);
+            var yAt2 = fracAdd(fracMul(aFrac, makeFrac(cc.t2, 1)), bFrac);
+            badge = '一次関数・文章題（ろうそく）';
+            storyHtml = '長さ ' + cc.len + 'cm のろうそくに火をつけると、' + cc.min + ' 分間に ' + cc.cm + 'cm の割合で短くなる。火をつけてから <span class="math-expr">x</span> 分後の残りの長さを <span class="math-expr">y</span> cm とする。';
+            diagramSvg = svgCandle(cc.len, cc.min + '分で ' + cc.cm + 'cm 減る');
+            eqHtml = formatEquationHtml('lin', aFrac, bFrac);
+            q1Exp = '1分あたり ' + renderFracHtml(fracAbs(aFrac)) + ' cm 短くなるので傾きは ' + renderFracHtml(aFrac) + '、切片は ' + cc.len + '。よって <strong>' + eqHtml + '</strong>。';
+            subValA = { q: '火をつけてから ' + cc.t1 + ' 分後のろうそくの長さは何 cm か求めなさい。', unitStr: 'cm', ans: yAt1, hint: '求めるのは残りの長さ（y）だよ。(1) の式に x = ' + cc.t1 + ' を代入しよう。', exp: '求めるのは残りの長さ（<span class="math-expr">y</span>）なので、' + eqHtml + ' に <span class="math-expr">x</span> = ' + cc.t1 + ' を代入します。<br>計算すると <strong>' + renderFracHtml(yAt1) + ' cm</strong>。' };
+            subValB = { q: '残りの長さが ' + renderFracHtml(yAt2) + 'cm になるのは火をつけてから何分後か求めなさい。', unitStr: '分後', ans: makeFrac(cc.t2, 1), hint: '求めるのは時間（x）だよ。(1) の式に y = ' + renderFracHtml(yAt2) + ' を代入して解こう。', exp: '求めるのは時間（<span class="math-expr">x</span>）なので、' + eqHtml + ' に <span class="math-expr">y</span> = ' + renderFracHtml(yAt2) + ' を代入して解くと、<strong>' + cc.t2 + ' 分後</strong>。' };
+          } else if (themeIdx === 2) {
+            var spc = pick([{ base: 10, g: 2, cm: 1, a: makeFrac(1, 2), x1: 8, x2: 14 }, { base: 12, g: 5, cm: 2, a: makeFrac(2, 5), x1: 10, x2: 20 }, { base: 15, g: 1, cm: 2, a: makeFrac(2, 1), x1: 4, x2: 7 }]);
+            aFrac = spc.a; bFrac = makeFrac(spc.base, 1);
+            var sy1 = fracAdd(fracMul(aFrac, makeFrac(spc.x1, 1)), bFrac);
+            var sy2 = fracAdd(fracMul(aFrac, makeFrac(spc.x2, 1)), bFrac);
+            badge = '一次関数・文章題（ばねの伸び）';
+            storyHtml = '自然の長さ（おもりのないときの長さ）が ' + spc.base + 'cm のばねがある。' + spc.g + 'g のおもりをつるすごとに ' + spc.cm + 'cm のびるとき、<span class="math-expr">x</span> g のおもりをつるしたときのばね全体の長さを <span class="math-expr">y</span> cm とする。';
+            diagramSvg = svgSpring(spc.base, spc.g + 'gで +' + spc.cm + 'cm');
+            eqHtml = formatEquationHtml('lin', aFrac, bFrac);
+            q1Exp = '1g あたり ' + renderFracHtml(aFrac) + ' cm のび、元の長さ（切片）は ' + spc.base + ' cm なので、<strong>' + eqHtml + '</strong>。';
+            subValA = { q: spc.x1 + 'g のおもりをつるしたときのばねの長さは何 cm か求めなさい。', unitStr: 'cm', ans: sy1, hint: '求めるのはばねの長さ（y）だよ。(1) の式に x = ' + spc.x1 + ' を代入しよう。', exp: '求めるのはばねの長さ（<span class="math-expr">y</span>）なので、' + eqHtml + ' に <span class="math-expr">x</span> = ' + spc.x1 + ' を代入します。<br>計算すると <strong>' + renderFracHtml(sy1) + ' cm</strong>。' };
+            subValB = { q: 'ばね全体の長さが ' + renderFracHtml(sy2) + 'cm になるとき、つるしたおもりの重さは何 g か求めなさい。', unitStr: 'g', ans: makeFrac(spc.x2, 1), hint: '求めるのはおもりの重さ（x）だよ。(1) の式に y = ' + renderFracHtml(sy2) + ' を代入して解こう。', exp: '求めるのはおもりの重さ（<span class="math-expr">x</span>）なので、' + eqHtml + ' に <span class="math-expr">y</span> = ' + renderFracHtml(sy2) + ' を代入して解くと、<strong>' + spc.x2 + ' g</strong>。' };
+          } else {
+            var abL = pick([6, 8]), bcL = pick([8, 10]), spdL = 2;
+            var tStart = bcL / spdL, tEnd = (bcL + abL) / spdL;
+            aFrac = makeFrac(-bcL, 1); bFrac = makeFrac((bcL * (bcL + abL)) / 2, 1);
+            var tl1 = tStart + 1, tl2 = tEnd - 1;
+            if (tl1 === tl2) tl2 = tStart + 2;
+            var ly1 = bFrac.n + aFrac.n * tl1, ly2 = bFrac.n + aFrac.n * tl2;
+            badge = '一次関数・文章題（動点・減少区間）';
+            storyHtml = '縦 ' + abL + 'cm、横 ' + bcL + 'cm の長方形 ABCD で、点 P は頂点 B を出発して辺 BC、CD 上を D まで毎秒 ' + spdL + 'cm で動く。点 P が辺 CD 上にあるとき（' + tStart + ' ≦ <span class="math-expr">x</span> ≦ ' + tEnd + '）、出発してから <span class="math-expr">x</span> 秒後の △APD の面積を <span class="math-expr">y</span> cm<sup>2</sup> とする。';
+            diagramSvg = svgRectMovingLin(abL, bcL, spdL);
+            eqHtml = formatEquationHtml('lin', aFrac, bFrac);
+            q1Exp = '残りの長さ DP ＝ ' + (bcL + abL) + ' − ' + spdL + '<span class="math-expr">x</span>。△APD の面積は <span class="frac"><span class="frac-num">1</span><span class="frac-den">2</span></span> × ' + bcL + ' × (' + (bcL + abL) + ' − ' + spdL + '<span class="math-expr">x</span>) ＝ <strong>' + eqHtml + '</strong>。';
+            subValA = { q: '出発してから ' + tl1 + ' 秒後の △APD の面積を求めなさい。', unitStr: 'cm²', ans: makeFrac(ly1, 1), hint: '求めるのは面積（y）だよ。(1) の式に x = ' + tl1 + ' を代入しよう。', exp: '求めるのは面積（<span class="math-expr">y</span>）なので、' + eqHtml + ' に <span class="math-expr">x</span> = ' + tl1 + ' を代入します。<br>計算すると <strong>' + ly1 + ' cm²</strong>。' };
+            subValB = { q: '辺 CD 上で △APD の面積が ' + ly2 + ' cm<sup>2</sup> になるのは出発してから何秒後か求めなさい。', unitStr: '秒後', ans: makeFrac(tl2, 1), hint: '求めるのは時間（x）だよ。(1) の式に y = ' + ly2 + ' を代入して解こう。', exp: '求めるのは時間（<span class="math-expr">x</span>）なので、' + eqHtml + ' に <span class="math-expr">y</span> = ' + ly2 + ' を代入して解くと、<strong>' + tl2 + ' 秒後</strong>。' };
+          }
+        } else {
+          themeIdx = randInt(0, 2);
+          if (themeIdx === 0) {
+            var qc = pick([
+              { a: makeFrac(2, 1), t0: 2, d0: 8, t1: 3, t2: 5 },
+              { a: makeFrac(2, 1), t0: 3, d0: 18, t1: 4, t2: 6 },
+              { a: makeFrac(3, 1), t0: 2, d0: 12, t1: 4, t2: 5 },
+              { a: makeFrac(1, 2), t0: 4, d0: 8, t1: 6, t2: 8 },
+              { a: makeFrac(1, 2), t0: 2, d0: 2, t1: 4, t2: 6 }
+            ]);
+            aFrac = qc.a;
+            var dAt1 = fracMul(aFrac, makeFrac(qc.t1 * qc.t1, 1));
+            var dAt2 = fracMul(aFrac, makeFrac(qc.t2 * qc.t2, 1));
+            badge = '二次関数・文章題（斜面の転がり）';
+            storyHtml = 'ボールが斜面を転がり始めてから <span class="math-expr">x</span> 秒間に進む距離 <span class="math-expr">y</span> m は <span class="math-expr">x</span> の2乗に比例する。転がり始めてから ' + qc.t0 + ' 秒間に ' + qc.d0 + 'm 進んだ。';
+            diagramSvg = svgSlopeBall(qc.t0, qc.d0);
+            eqHtml = formatEquationHtml('quad', aFrac);
+            q1Exp = '<span class="math-expr">y</span> = <span class="math-expr">ax</span><sup>2</sup> に <span class="math-expr">x</span> = ' + qc.t0 + ', <span class="math-expr">y</span> = ' + qc.d0 + ' を代入すると <span class="math-expr">a</span> = ' + renderFracHtml(aFrac) + '。よって <strong>' + eqHtml + '</strong>。';
+            subValA = { q: '転がり始めてから ' + qc.t1 + ' 秒間に進む距離は何 m か求めなさい。', unitStr: 'm', ans: dAt1, hint: '求めるのは進む距離（y）だよ。(1) の式に x = ' + qc.t1 + ' を代入しよう。', exp: '求めるのは進む距離（<span class="math-expr">y</span>）なので、' + eqHtml + ' に <span class="math-expr">x</span> = ' + qc.t1 + ' を代入します。<br>計算すると <strong>' + renderFracHtml(dAt1) + ' m</strong>。' };
+            subValB = { q: '進む距離が ' + renderFracHtml(dAt2) + 'm になるのは転がり始めてから何秒後か求めなさい。', unitStr: '秒後', ans: makeFrac(qc.t2, 1), hint: '求めるのは時間（x）だよ。(1) の式に y = ' + renderFracHtml(dAt2) + ' を代入して x² を求めよう。', exp: '求めるのは時間（<span class="math-expr">x</span>）なので、' + eqHtml + ' に <span class="math-expr">y</span> = ' + renderFracHtml(dAt2) + ' を代入します。<br><span class="math-expr">x</span><sup>2</sup> = ' + (qc.t2 * qc.t2) + ' より <strong>' + qc.t2 + ' 秒後</strong>。' };
+          } else if (themeIdx === 1) {
+            var bc2 = pick([
+              { a: makeFrac(1, 100), v0: 40, d0: 16, v1: 60, v2: 50 },
+              { a: makeFrac(1, 100), v0: 30, d0: 9, v1: 50, v2: 70 },
+              { a: makeFrac(1, 200), v0: 40, d0: 8, v1: 60, v2: 80 },
+              { a: makeFrac(1, 50), v0: 20, d0: 8, v1: 30, v2: 50 },
+              { a: makeFrac(1, 50), v0: 30, d0: 18, v1: 40, v2: 60 }
+            ]);
+            aFrac = bc2.a;
+            var bd1 = fracMul(aFrac, makeFrac(bc2.v1 * bc2.v1, 1));
+            var bd2 = fracMul(aFrac, makeFrac(bc2.v2 * bc2.v2, 1));
+            badge = '二次関数・文章題（制動距離）';
+            storyHtml = '時速 <span class="math-expr">x</span> km で走る車がブレーキをかけてから止まるまでの距離（制動距離）<span class="math-expr">y</span> m は、<span class="math-expr">x</span> の2乗に比例する。時速 ' + bc2.v0 + 'km のときの制動距離は ' + bc2.d0 + 'm であった。';
+            diagramSvg = svgCarBrake(bc2.v0, bc2.d0);
+            eqHtml = formatEquationHtml('quad', aFrac);
+            q1Exp = '<span class="math-expr">y</span> = <span class="math-expr">ax</span><sup>2</sup> に <span class="math-expr">x</span> = ' + bc2.v0 + ', <span class="math-expr">y</span> = ' + bc2.d0 + ' を代入すると <span class="math-expr">a</span> = ' + renderFracHtml(aFrac) + '。よって <strong>' + eqHtml + '</strong>。';
+            subValA = { q: '時速 ' + bc2.v1 + 'km で走っているときの制動距離は何 m か求めなさい。', unitStr: 'm', ans: bd1, hint: '求めるのは制動距離（y）だよ。(1) の式に x = ' + bc2.v1 + ' を代入しよう。', exp: '求めるのは制動距離（<span class="math-expr">y</span>）なので、' + eqHtml + ' に <span class="math-expr">x</span> = ' + bc2.v1 + ' を代入します。<br>計算すると <strong>' + renderFracHtml(bd1) + ' m</strong>。' };
+            subValB = { q: '制動距離が ' + renderFracHtml(bd2) + 'm のとき、車の速さは時速何 km か求めなさい。', unitStr: 'km/h', ans: makeFrac(bc2.v2, 1), hint: '求めるのは車の速さ（x）だよ。(1) の式に y = ' + renderFracHtml(bd2) + ' を代入して x² を求めよう。', exp: '求めるのは車の速さ（<span class="math-expr">x</span>）なので、' + eqHtml + ' に <span class="math-expr">y</span> = ' + renderFracHtml(bd2) + ' を代入します。<br><span class="math-expr">x</span><sup>2</sup> = ' + (bc2.v2 * bc2.v2) + ' より <strong>時速 ' + bc2.v2 + ' km</strong>。' };
+          } else {
+            var qtc = pick([
+              { side: 10, spd: 1, a: makeFrac(1, 2), t1: 4, t2: 6 },
+              { side: 12, spd: 1, a: makeFrac(1, 2), t1: 6, t2: 8 },
+              { side: 12, spd: 2, a: makeFrac(2, 1), t1: 3, t2: 5 },
+              { side: 16, spd: 2, a: makeFrac(2, 1), t1: 4, t2: 6 }
+            ]);
+            aFrac = qtc.a;
+            var qa1 = fracMul(aFrac, makeFrac(qtc.t1 * qtc.t1, 1));
+            var qa2 = fracMul(aFrac, makeFrac(qtc.t2 * qtc.t2, 1));
+            badge = '二次関数・文章題（動点と面積）';
+            storyHtml = 'AB = BC = ' + qtc.side + 'cm、∠B = 90° の直角二等辺三角形 ABC がある。2点 P, Q は同時に頂点 B を出発し、P は辺 BC 上を、Q は辺 BA 上をそれぞれ毎秒 ' + qtc.spd + 'cm の速さで動く。出発してから <span class="math-expr">x</span> 秒後の △PBQ の面積を <span class="math-expr">y</span> cm<sup>2</sup> とする。';
+            diagramSvg = svgQuadTriangle(qtc.side, qtc.spd);
+            eqHtml = formatEquationHtml('quad', aFrac);
+            q1Exp = '底辺 BP ＝ ' + qtc.spd + '<span class="math-expr">x</span>、高さ BQ ＝ ' + qtc.spd + '<span class="math-expr">x</span> より、<span class="math-expr">y</span> = <span class="frac"><span class="frac-num">1</span><span class="frac-den">2</span></span> × ' + qtc.spd + '<span class="math-expr">x</span> × ' + qtc.spd + '<span class="math-expr">x</span> = <strong>' + eqHtml + '</strong>。';
+            subValA = { q: '出発してから ' + qtc.t1 + ' 秒後の △PBQ の面積を求めなさい。', unitStr: 'cm²', ans: qa1, hint: '求めるのは面積（y）だよ。(1) の式に x = ' + qtc.t1 + ' を代入しよう。', exp: '求めるのは面積（<span class="math-expr">y</span>）なので、' + eqHtml + ' に <span class="math-expr">x</span> = ' + qtc.t1 + ' を代入します。<br>計算すると <strong>' + renderFracHtml(qa1) + ' cm²</strong>。' };
+            subValB = { q: '△PBQ の面積が ' + renderFracHtml(qa2) + ' cm<sup>2</sup> になるのは出発してから何秒後か求めなさい。', unitStr: '秒後', ans: makeFrac(qtc.t2, 1), hint: '求めるのは時間（x）だよ。(1) の式に y = ' + renderFracHtml(qa2) + ' を代入して x² を求めよう。', exp: '求めるのは時間（<span class="math-expr">x</span>）なので、' + eqHtml + ' に <span class="math-expr">y</span> = ' + renderFracHtml(qa2) + ' を代入します。<br><span class="math-expr">x</span><sup>2</sup> = ' + (qtc.t2 * qtc.t2) + ' より <strong>' + qtc.t2 + ' 秒後</strong>。' };
+          }
+        }
+
+        var pair = Math.random() < 0.5 ? [subValA, subValB] : [subValB, subValA];
+        var q0 = {
+          unit: unit, step: 's6', themeKey: badge, badge: badge, storyHtml: storyHtml,
+          questionHtml: '<strong>(1)</strong> <span class="math-expr">y</span> を <span class="math-expr">x</span> の式で表しなさい。',
+          plainQuestionHtml: '<span class="math-expr">y</span> を <span class="math-expr">x</span> の式で表しなさい。',
+          inputMode: 'eq', ansA: aFrac, ansB: bFrac, svgHtml: diagramSvg,
+          hintText: '問題文から関係式（基本の形）に当てはめて、比例定数や傾き・切片を求めよう。',
+          explanationHtml: q1Exp, defaultVisual: false
+        };
+        var q1 = {
+          unit: unit, step: 's6', themeKey: badge, badge: badge, storyHtml: storyHtml,
+          questionHtml: '<strong>(2)</strong> ' + pair[0].q,
+          plainQuestionHtml: pair[0].q,
+          inputMode: 'val', valLabel: '', valUnit: pair[0].unitStr, ansVal: pair[0].ans, svgHtml: diagramSvg,
+          hintText: pair[0].hint, explanationHtml: 'まず式を求めると <strong>' + eqHtml + '</strong>。<br>' + pair[0].exp, defaultVisual: false
+        };
+        var q2 = {
+          unit: unit, step: 's6', themeKey: badge, badge: badge, storyHtml: storyHtml,
+          questionHtml: '<strong>(3)</strong> ' + pair[1].q,
+          plainQuestionHtml: pair[1].q,
+          inputMode: 'val', valLabel: '', valUnit: pair[1].unitStr, ansVal: pair[1].ans, svgHtml: diagramSvg,
+          hintText: pair[1].hint, explanationHtml: 'まず式を求めると <strong>' + eqHtml + '</strong>。<br>' + pair[1].exp, defaultVisual: false
+        };
+
+        return { badge: badge, storyHtml: storyHtml, eqHtml: eqHtml, diagramSvg: diagramSvg, subQuestions: [q0, q1, q2] };
+      }
+
+      // テストver.用の単発問題ジェネレータ
+      function generateSingleQuestion(unit, step) {
+        if (step === 's1') return genS1(unit);
+        if (step === 's2') return genS2(unit);
+        if (step === 's3') return genS3(unit);
+        if (step === 's4') return genS4(unit);
+        if (step === 's5') return genS5(unit);
+        // s6: テストでは式または値の単発1問として出題
+        var ws = buildWordProblemSet(unit);
+        var pickedSub = Math.random() < 0.45 ? ws.subQuestions[0] : pick([ws.subQuestions[1], ws.subQuestions[2]]);
+        pickedSub.questionHtml = pickedSub.plainQuestionHtml;
+        return pickedSub;
+      }
+
+      /* =========================================================
+         8. 共通：解答エリア構築 & 採点ロジック（縦組み分数対応）
+      ========================================================= */
+      function buildAnswerArea(containerEl, q, prefix) {
+        containerEl.innerHTML = '';
+        app.fields = [];
+        app.activeFieldIdx = 0;
+        app.activePart = 'main';
+        app.slotPrefix = prefix;
+
+        function createFieldHost(id, kind, opts) {
+          opts = opts || {};
+          var idx = app.fields.length;
+          app.fields.push({
+            id: id,
+            kind: kind, // 'num' | 'sign'
+            allowSign: opts.allowSign !== false,
+            allowFrac: opts.allowFrac !== false,
+            sign: '',
+            isFrac: false,
+            num: '',
+            den: ''
+          });
+          var host = document.createElement('span');
+          host.className = 'field-host';
+          host.id = prefix + 'host-' + id;
+          return { host: host, idx: idx };
+        }
+
+        function addSpan(cls, html) {
+          var sp = document.createElement('span');
+          sp.className = cls;
+          sp.innerHTML = html;
+          containerEl.appendChild(sp);
+        }
+
+        if (q.inputMode === 'eq') {
+          addSpan('ans-label', '<span class="math-expr">y</span> =');
+          if (q.unit === 'prop') {
+            containerEl.appendChild(createFieldHost('a', 'num', { allowSign: true, allowFrac: true }).host);
+            addSpan('ans-label', '<span class="math-expr">x</span>');
+          } else if (q.unit === 'quad') {
+            containerEl.appendChild(createFieldHost('a', 'num', { allowSign: true, allowFrac: true }).host);
+            addSpan('ans-label', '<span class="math-expr">x</span><sup>2</sup>');
+          } else if (q.unit === 'lin') {
+            containerEl.appendChild(createFieldHost('a', 'num', { allowSign: true, allowFrac: true }).host);
+            addSpan('ans-label', '<span class="math-expr">x</span>');
+            containerEl.appendChild(createFieldHost('bSign', 'sign', { allowSign: false, allowFrac: false }).host);
+            containerEl.appendChild(createFieldHost('bNum', 'num', { allowSign: false, allowFrac: true }).host);
+          } else if (q.unit === 'inv') {
+            containerEl.appendChild(createFieldHost('invSign', 'sign', { allowSign: false, allowFrac: false }).host);
+            var fbox = document.createElement('div');
+            fbox.className = 'inv-frac-box';
+            fbox.appendChild(createFieldHost('invNum', 'num', { allowSign: false, allowFrac: false }).host);
+            var bar = document.createElement('div');
+            bar.className = 'inv-frac-bar';
+            fbox.appendChild(bar);
+            var den = document.createElement('div');
+            den.className = 'inv-frac-den';
+            den.textContent = 'x';
+            fbox.appendChild(den);
+            containerEl.appendChild(fbox);
+          }
+        } else if (q.inputMode === 'val') {
+          if (q.valLabel) {
+            addSpan('ans-label', q.valLabel);
+          } else {
+            addSpan('ans-label', '<span style="font-size:0.9rem;color:var(--slate-500);">答え</span>');
+          }
+          containerEl.appendChild(createFieldHost('val', 'num', { allowSign: true, allowFrac: true }).host);
+          if (q.valUnit) addSpan('ans-unit', q.valUnit);
+        } else if (q.inputMode === 'range') {
+          containerEl.appendChild(createFieldHost('min', 'num', { allowSign: true, allowFrac: true }).host);
+          addSpan('ans-label', '≦ <span class="math-expr">y</span> ≦');
+          containerEl.appendChild(createFieldHost('max', 'num', { allowSign: true, allowFrac: true }).host);
+        }
+
+        renderAllFields();
+      }
+
+      function renderFieldDOM(idx) {
+        var f = app.fields[idx];
+        if (!f) return;
+        var host = $(app.slotPrefix + 'host-' + f.id);
+        if (!host) return;
+        host.innerHTML = '';
+
+        var isFieldActive = (idx === app.activeFieldIdx);
+
+        if (f.kind === 'sign') {
+          var sBtn = document.createElement('button');
+          sBtn.type = 'button';
+          var filled = (f.sign === '+' || f.sign === '-');
+          sBtn.className = 'input-slot sign-slot' + (filled ? ' filled' : '') + (isFieldActive ? ' active' : '');
+          sBtn.textContent = f.sign === '+' ? '＋' : (f.sign === '-' ? '－' : '±');
+          sBtn.addEventListener('click', function () { setActiveTarget(idx, 'main'); });
+          host.appendChild(sBtn);
+          return;
+        }
+
+        if (!f.isFrac) {
+          var nBtn = document.createElement('button');
+          nBtn.type = 'button';
+          nBtn.className = 'input-slot' + (isFieldActive ? ' active' : '');
+          var signDisp = f.allowSign ? (f.sign === '-' ? '−' : (f.sign === '+' ? '+' : '')) : '';
+          nBtn.textContent = signDisp + f.num;
+          nBtn.addEventListener('click', function () { setActiveTarget(idx, 'main'); });
+          host.appendChild(nBtn);
+          return;
+        }
+
+        // 上下2段の縦組み分数入力枠
+        var wrap = document.createElement('div');
+        wrap.className = 'frac-input-wrap';
+
+        if (f.allowSign && f.sign) {
+          var sg = document.createElement('span');
+          sg.className = 'frac-input-sign';
+          sg.textContent = f.sign === '-' ? '−' : '+';
+          wrap.appendChild(sg);
+        }
+
+        var stack = document.createElement('div');
+        stack.className = 'frac-input-stack';
+
+        var numBtn = document.createElement('button');
+        numBtn.type = 'button';
+        numBtn.className = 'input-slot frac-part-slot' + (isFieldActive && app.activePart === 'num' ? ' active' : '');
+        numBtn.textContent = f.num;
+        numBtn.setAttribute('aria-label', '分子');
+        numBtn.addEventListener('click', function () { setActiveTarget(idx, 'num'); });
+
+        var bar = document.createElement('div');
+        bar.className = 'frac-input-bar';
+
+        var denBtn = document.createElement('button');
+        denBtn.type = 'button';
+        denBtn.className = 'input-slot frac-part-slot' + (isFieldActive && app.activePart === 'den' ? ' active' : '');
+        denBtn.textContent = f.den;
+        denBtn.setAttribute('aria-label', '分母');
+        denBtn.addEventListener('click', function () { setActiveTarget(idx, 'den'); });
+
+        stack.appendChild(numBtn);
+        stack.appendChild(bar);
+        stack.appendChild(denBtn);
+        wrap.appendChild(stack);
+        host.appendChild(wrap);
+      }
+
+      function renderAllFields() {
+        for (var i = 0; i < app.fields.length; i++) {
+          renderFieldDOM(i);
+        }
+      }
+
+      function setActiveTarget(idx, part) {
+        if (idx < 0 || idx >= app.fields.length) return;
+        var prevIdx = app.activeFieldIdx;
+        app.activeFieldIdx = idx;
+        var f = app.fields[idx];
+        if (f.isFrac) {
+          app.activePart = (part === 'den') ? 'den' : 'num';
+        } else {
+          app.activePart = 'main';
+        }
+        if (prevIdx !== idx) renderFieldDOM(prevIdx);
+        renderFieldDOM(idx);
+      }
+
+      function getFieldById(id) {
+        for (var i = 0; i < app.fields.length; i++) {
+          if (app.fields[i].id === id) return app.fields[i];
+        }
+        return null;
+      }
+
+      function parseFieldValue(f, allowImplicitOne) {
+        if (!f) return { status: 'error', errorMsg: '入力欄が見つかりません。' };
+
+        if (f.isFrac) {
+          if (f.num === '') return { status: 'error', errorMsg: '分子に数字を入力してね！' };
+          if (f.den === '') return { status: 'error', errorMsg: '分母に数字を入力してね！' };
+          var nInt = parseInt(f.num, 10);
+          var dInt = parseInt(f.den, 10);
+          if (isNaN(nInt) || isNaN(dInt)) return { status: 'error', errorMsg: '数字を正しく入力してね！' };
+          if (dInt === 0) return { status: 'error', errorMsg: '分母に 0 は入れられないよ！' };
+          var signedN = (f.sign === '-') ? -nInt : nInt;
+          var reduced = makeFrac(signedN, dInt);
+          var denIsOne = (dInt === 1);
+          var unreduced = denIsOne || (nInt > 0 && gcd(nInt, dInt) > 1) || (nInt === 0 && dInt > 1);
+          return {
+            status: 'ok',
+            frac: reduced,
+            isFrac: true,
+            unreduced: unreduced,
+            denIsOne: denIsOne,
+            implicitOne: false,
+            explicitOne: false,
+            displayHtml: renderRawFracHtml(f.sign, String(nInt), String(dInt), false),
+            displayAbsHtml: renderRawFracHtml('', String(nInt), String(dInt), true)
+          };
+        }
+
+        if (f.num === '') {
+          if (allowImplicitOne) {
+            var impN = (f.sign === '-') ? -1 : 1;
+            return {
+              status: 'ok',
+              frac: makeFrac(impN, 1),
+              isFrac: false,
+              unreduced: false,
+              denIsOne: false,
+              implicitOne: true,
+              explicitOne: false,
+              displayHtml: impN === -1 ? '−' : '',
+              displayAbsHtml: ''
+            };
+          }
+          return { status: 'empty', errorMsg: '数値を入力してね！' };
+        }
+
+        var valInt = parseInt(f.num, 10);
+        if (isNaN(valInt)) return { status: 'error', errorMsg: '数字を正しく入力してね！' };
+        var sVal = (f.sign === '-') ? -valInt : valInt;
+        var fr = makeFrac(sVal, 1);
+        return {
+          status: 'ok',
+          frac: fr,
+          isFrac: false,
+          unreduced: false,
+          denIsOne: false,
+          implicitOne: false,
+          explicitOne: (sVal === 1 || sVal === -1),
+          displayHtml: renderFracHtml(fr, false),
+          displayAbsHtml: String(valInt)
+        };
+      }
+
+      function evaluateCurrentSlots(q) {
+        var res = {
+          valid: false,
+          isCorrect: false,
+          isWarn: false,
+          errorMsg: '',
+          userAnswerHtml: '（未解答）',
+          oneOmissionNote: ''
+        };
+
+        if (q.inputMode === 'eq') {
+          if (q.unit === 'inv') {
+            var invSignF = getFieldById('invSign');
+            var invNumF = getFieldById('invNum');
+            var pInv = parseFieldValue(invNumF, false);
+            if (pInv.status !== 'ok') {
+              res.errorMsg = '分子に数字を入力してね！';
+              return res;
+            }
+            var mult = (invSignF && invSignF.sign === '-') ? -1 : 1;
+            var userA = makeFrac(pInv.frac.n * mult, 1);
+            res.valid = true;
+            res.userAnswerHtml = formatEquationHtml('inv', userA);
+            res.isCorrect = fracEqual(userA, q.ansA);
+            if (!res.isCorrect) res.errorMsg = '❌ おしい！符号（＋／－）と分子の数をもう一度確認してみよう。';
+            return res;
+          }
+
+          var aField = getFieldById('a');
+          var pA = parseFieldValue(aField, true);
+          if (pA.status !== 'ok') {
+            res.errorMsg = pA.errorMsg || '傾き（比例定数）を正しく入力してね！';
+            return res;
+          }
+
+          var userB = makeFrac(0, 1);
+          var pB = null;
+          var bSignStr = '';
+          if (q.unit === 'lin') {
+            var bSignF = getFieldById('bSign');
+            var bNumF = getFieldById('bNum');
+            if (!bSignF || !bSignF.sign) {
+              res.errorMsg = '切片の符号（＋／－）を入力してね！';
+              return res;
+            }
+            bSignStr = bSignF.sign;
+            pB = parseFieldValue(bNumF, false);
+            if (pB.status !== 'ok') {
+              res.errorMsg = pB.status === 'empty' ? '切片の数字を入力してね！' : pB.errorMsg;
+              return res;
+            }
+            userB = makeFrac(pB.frac.n * (bSignStr === '-' ? -1 : 1), pB.frac.d);
+          }
+
+          res.valid = true;
+          var varPart = q.unit === 'quad' ? '<span class="math-expr">x</span><sup>2</sup>' : '<span class="math-expr">x</span>';
+          var leadHtml = '';
+          if (pA.implicitOne) {
+            leadHtml = (pA.frac.n === -1 ? '−' : '') + varPart;
+          } else if (pA.explicitOne) {
+            leadHtml = (pA.frac.n === -1 ? '−1' : '1') + varPart;
+          } else {
+            leadHtml = pA.displayHtml + varPart;
+          }
+          if (q.unit === 'lin') {
+            leadHtml += (bSignStr === '-' ? ' − ' : ' + ') + pB.displayAbsHtml;
+          }
+          res.userAnswerHtml = '<span class="math-expr">y</span> = ' + leadHtml;
+
+          var okA = fracEqual(pA.frac, q.ansA);
+          var okB = (q.unit !== 'lin') || fracEqual(userB, q.ansB);
+
+          if (okA && okB) {
+            var anyUnreduced = pA.unreduced || (pB && pB.unreduced);
+            if (anyUnreduced) {
+              var anyDenOne = pA.denIsOne || (pB && pB.denIsOne);
+              res.isCorrect = false;
+              res.isWarn = true;
+              res.errorMsg = anyDenOne
+                ? '💡 値は合っているよ！分母が 1 なので整数に直して答えよう！'
+                : '💡 値は合っているよ！約分して一番簡単な分数にしよう！';
+              return res;
+            }
+            res.isCorrect = true;
+            if (q.ansA.d === 1 && (q.ansA.n === 1 || q.ansA.n === -1)) {
+              if (pA.explicitOne) {
+                res.oneOmissionNote = '※正解！ただしテストの答案では「1」を省略して ' + formatEquationHtml(q.unit, q.ansA, q.ansB) + ' と書こうね！';
+              } else if (pA.implicitOne) {
+                res.oneOmissionNote = '✨ 「1」を省略して書けているね！テストでもその調子！';
+              }
+            }
+          } else {
+            if (q.unit === 'lin' && okA && !okB) res.errorMsg = '❌ 傾きは合っているよ！切片の符号や数字を見直してみよう。';
+            else if (q.unit === 'lin' && !okA && okB) res.errorMsg = '❌ 切片は合っているよ！傾きの符号や大きさを見直してみよう。';
+            else res.errorMsg = '❌ おしい！符号や数字をもう一度確認してみよう。';
+          }
+          return res;
+        }
+
+        if (q.inputMode === 'val') {
+          var pV = parseFieldValue(getFieldById('val'), false);
+          if (pV.status !== 'ok') {
+            res.errorMsg = pV.errorMsg || '数値を入力してね！';
+            return res;
+          }
+          res.valid = true;
+          var uStr = q.valUnit ? ' ' + q.valUnit : '';
+          res.userAnswerHtml = (q.valLabel ? q.valLabel + ' ' : '') + pV.displayHtml + uStr;
+          if (fracEqual(pV.frac, q.ansVal)) {
+            if (pV.unreduced) {
+              res.isCorrect = false;
+              res.isWarn = true;
+              res.errorMsg = pV.denIsOne
+                ? '💡 値は合っているよ！分母が 1 なので整数に直して答えよう！'
+                : '💡 値は合っているよ！約分しよう！';
+            } else {
+              res.isCorrect = true;
+            }
+          } else {
+            res.errorMsg = '❌ おしい！代入や符号の計算をもう一度確認してみよう。';
+          }
+          return res;
+        }
+
+        if (q.inputMode === 'range') {
+          var pMin = parseFieldValue(getFieldById('min'), false);
+          var pMax = parseFieldValue(getFieldById('max'), false);
+          if (pMin.status !== 'ok' || pMax.status !== 'ok') {
+            res.errorMsg = (pMin.status === 'error' ? pMin.errorMsg : (pMax.status === 'error' ? pMax.errorMsg : '最小値と最大値の両方を入力してね！'));
+            return res;
+          }
+          res.valid = true;
+          res.userAnswerHtml = pMin.displayHtml + ' ≦ <span class="math-expr">y</span> ≦ ' + pMax.displayHtml;
+          if (fracEqual(pMin.frac, q.ansMin) && fracEqual(pMax.frac, q.ansMax)) {
+            if (pMin.unreduced || pMax.unreduced) {
+              res.isCorrect = false;
+              res.isWarn = true;
+              res.errorMsg = (pMin.denIsOne || pMax.denIsOne)
+                ? '💡 値は合っているよ！分母が 1 のところは整数に直そう！'
+                : '💡 値は合っているよ！約分しよう！';
+            } else {
+              res.isCorrect = true;
+            }
+          } else if (fracEqual(pMin.frac, q.ansMax) && fracEqual(pMax.frac, q.ansMin)) {
+            res.isWarn = true;
+            res.errorMsg = '💡 数字は合っているよ！小さい方を左、大きい方を右に書こう！';
+          } else {
+            res.errorMsg = '❌ おしい！x の両端の値（二次関数で 0 をまたぐときは y = 0 も！）を確かめよう。';
+          }
+          return res;
+        }
+
+        return res;
+      }
+
+      /* =========================================================
+         9. 練習ver. 制御
+      ========================================================= */
+      function updatePracticeVisual() {
+        var area = $('visual-area');
+        var btn = $('visual-toggle-btn');
+        var hint = $('hint-note');
+        if (app.visualOpen) {
+          area.classList.add('visible');
+          btn.textContent = app.pStep === 's6' ? '🙈 図解・ヒントを隠す' : '🙈 グラフ・ヒントを隠す';
+          if (app.pQ && app.pQ.hintText) {
+            hint.textContent = '💡 ヒント：' + app.pQ.hintText;
+            hint.style.display = 'block';
+          } else {
+            hint.style.display = 'none';
+          }
+        } else {
+          area.classList.remove('visible');
+          btn.textContent = app.pStep === 's6' ? '💡 ヒントを見る' : '💡 ヒント／グラフを見る';
+        }
+      }
+
+      function updateWordSubTabsUI() {
+        var labels = ['(1) 式', '(2) 値①', '(3) 値②'];
+        for (var i = 0; i < 3; i++) {
+          var btn = $('subq-btn-' + i);
+          var isDone = app.wordSolved[i];
+          var isCur = (i === app.wordSubIdx);
+          btn.className = 'subq-btn' + (isDone ? ' done' : '') + (isCur ? ' current' : '');
+          btn.textContent = (isDone ? '✓ ' : '') + labels[i];
+          btn.setAttribute('aria-selected', isCur ? 'true' : 'false');
+        }
+        var ref = $('eq-ref-badge');
+        if (app.wordEqRevealed) {
+          ref.className = 'eq-ref-badge';
+          ref.innerHTML = '求めた式：<strong>' + app.wordSet.eqHtml + '</strong>';
+          ref.style.display = 'block';
+        } else if (app.wordSubIdx > 0) {
+          ref.className = 'eq-ref-badge unsolved';
+          ref.textContent = '※(1)で求めた式を使って考えよう';
+          ref.style.display = 'block';
+        } else {
+          ref.style.display = 'none';
+        }
+      }
+
+      function renderPracticeQuestion() {
+        var q = app.pQ;
+        app.pAnswered = false;
+        app.practiceSession.recordedCurrentQ = false;
+        $('problem-badge').textContent = q.badge;
+        $('question-text').innerHTML = q.questionHtml;
+        $('svg-container').innerHTML = q.svgHtml || '';
+
+        if (app.pStep === 's6' && app.wordSet) {
+          $('story-box').innerHTML = app.wordSet.storyHtml;
+          $('story-box').style.display = 'block';
+          $('subq-tabs').style.display = 'grid';
+          updateWordSubTabsUI();
+        } else {
+          $('story-box').style.display = 'none';
+          $('subq-tabs').style.display = 'none';
+          $('eq-ref-badge').style.display = 'none';
+        }
+
+        $('feedback-box').className = 'feedback-box';
+        $('feedback-box').innerHTML = '';
+        $('explanation-box').style.display = 'none';
+        $('show-exp-btn').style.display = 'none';
+        $('next-btn').style.display = 'none';
+
+        app.visualOpen = !!q.defaultVisual;
+        updatePracticeVisual();
+        buildAnswerArea($('practice-answer-area'), q, 'p-');
+      }
+
+      function startNewPracticeQuestion() {
+        var maxTries = 30;
+        var chosenQ = null;
+        var chosenWordSet = null;
+        var chosenSig = '';
+
+        for (var attempt = 0; attempt < maxTries; attempt++) {
+          var candWordSet = null;
+          var candQ = null;
+          if (app.pStep === 's6') {
+            candWordSet = buildWordProblemSet(app.pUnit);
+            candQ = candWordSet.subQuestions[0];
+          } else {
+            if (app.pStep === 's1') candQ = genS1(app.pUnit);
+            else if (app.pStep === 's2') candQ = genS2(app.pUnit);
+            else if (app.pStep === 's3') candQ = genS3(app.pUnit);
+            else if (app.pStep === 's4') candQ = genS4(app.pUnit);
+            else candQ = genS5(app.pUnit);
+          }
+
+          var sig = getQuestionSignature(candQ);
+          chosenQ = candQ;
+          chosenWordSet = candWordSet;
+          chosenSig = sig;
+          if (app.recentPracticeSigs.indexOf(sig) === -1) break;
+        }
+
+        if (chosenSig) {
+          app.recentPracticeSigs.push(chosenSig);
+          if (app.recentPracticeSigs.length > 5) app.recentPracticeSigs.shift();
+        }
+
+        if (app.pStep === 's6') {
+          app.wordSet = chosenWordSet;
+          app.wordSubIdx = 0;
+          app.wordSolved = [false, false, false];
+          app.wordEqRevealed = false;
+          app.pQ = chosenWordSet.subQuestions[0];
+        } else {
+          app.wordSet = null;
+          app.pQ = chosenQ;
+        }
+        renderPracticeQuestion();
+      }
+
+      function selectWordSub(idx) {
+        if (app.pStep !== 's6' || !app.wordSet || idx < 0 || idx > 2) return;
+        app.wordSubIdx = idx;
+        app.pQ = app.wordSet.subQuestions[idx];
+        renderPracticeQuestion();
+      }
+
+      function submitPracticeAnswer() {
+        var res = evaluateCurrentSlots(app.pQ);
+        var fb = $('feedback-box');
+
+        // 練習セッション集計（1問につき初回回答のみカウント）
+        if (res.valid && !app.practiceSession.recordedCurrentQ) {
+          var ps = app.practiceSession;
+          ps.recordedCurrentQ = true;
+          ps.total++;
+          ps.units[app.pQ.unit] = true;
+          ps.steps[app.pQ.step] = true;
+          if (res.isCorrect) {
+            ps.correct++;
+          } else {
+            ps.mistakes.push(UNIT_NAMES[app.pQ.unit] + '(' + STEP_SHORT[app.pQ.step] + ')');
+          }
+          updatePracticeLogBarUI();
+        }
+
+        if (res.isCorrect) {
+          if (!app.pAnswered) {
+            app.scoreTotal++;
+            app.scoreStreak++;
+            $('score-total').textContent = app.scoreTotal;
+            $('score-streak').textContent = app.scoreStreak;
+            app.pAnswered = true;
+          }
+          var msg = '🎉 正解！よくできました！';
+          if (res.oneOmissionNote) msg += '<div class="one-omission-note">' + res.oneOmissionNote + '</div>';
+          fb.className = 'feedback-box correct';
+          fb.innerHTML = msg;
+
+          $('explanation-body').innerHTML = app.pQ.explanationHtml;
+          $('explanation-box').style.display = 'block';
+          $('show-exp-btn').style.display = 'none';
+
+          if (!app.visualOpen && app.pQ.svgHtml) {
+            app.visualOpen = true;
+            updatePracticeVisual();
+          }
+
+          var nextBtn = $('next-btn');
+          if (app.pStep === 's6' && app.wordSet) {
+            app.wordSolved[app.wordSubIdx] = true;
+            if (app.wordSubIdx === 0) app.wordEqRevealed = true;
+            updateWordSubTabsUI();
+            nextBtn.textContent = app.wordSubIdx < 2 ? '次の小問へ ➔' : '次の大問へ ➔';
+          } else {
+            nextBtn.textContent = '次の問題へ ➔';
+          }
+          nextBtn.style.display = 'block';
+        } else {
+          app.scoreStreak = 0;
+          $('score-streak').textContent = app.scoreStreak;
+          fb.className = 'feedback-box ' + (res.isWarn ? 'warn' : 'wrong');
+          fb.innerHTML = res.errorMsg || '❌ おしい！もう一度考えてみよう。';
+          $('show-exp-btn').style.display = 'block';
+        }
+      }
+
+      /* =========================================================
+         10. テストver. 制御
+      ========================================================= */
+      function stopTestTimer() {
+        if (app.testTimerId) {
+          clearInterval(app.testTimerId);
+          app.testTimerId = null;
+        }
+      }
+
+      function showTestSubscreen(name) {
+        app.testScreen = name;
+        $('test-setup-screen').classList.toggle('active', name === 'setup');
+        $('test-active-screen').classList.toggle('active', name === 'active');
+        $('test-result-screen').classList.toggle('active', name === 'result');
+        syncKeypadVisibilityAndLabels();
+      }
+
+      function syncKeypadVisibilityAndLabels() {
+        var dock = $('keypad-dock');
+        var secBtn = $('key-secondary-btn');
+        var subBtn = $('key-submit-btn');
+
+        if (app.mode === 'practice') {
+          dock.classList.remove('hidden');
+          secBtn.textContent = '🔄 別の問題にする';
+          subBtn.textContent = '✓ 答え合わせ';
+          subBtn.classList.remove('test-submit');
+        } else if (app.testScreen === 'active') {
+          dock.classList.remove('hidden');
+          secBtn.textContent = '⏭️ わからない（スキップ）';
+          var isLast = app.testIdx === app.testQuestions.length - 1;
+          subBtn.textContent = isLast ? '採点する 🏁' : '次へ進む ➔';
+          subBtn.classList.add('test-submit');
+        } else {
+          dock.classList.add('hidden');
+        }
+      }
+
+      function getCheckedValues(containerId) {
+        var inputs = $(containerId).querySelectorAll('input[type="checkbox"]:checked');
+        var vals = [];
+        for (var i = 0; i < inputs.length; i++) vals.push(inputs[i].value);
+        return vals;
+      }
+
+      function syncCheckboxStyles(containerId) {
+        var pills = $(containerId).querySelectorAll('.check-pill');
+        for (var i = 0; i < pills.length; i++) {
+          var cb = pills[i].querySelector('input[type="checkbox"]');
+          pills[i].classList.toggle('checked', cb.checked);
+        }
+      }
+
+      function applyPreset(preset) {
+        var unitMap = {
+          all: ['prop', 'inv', 'lin', 'quad'],
+          g1: ['prop', 'inv'],
+          g2: ['lin'],
+          g3: ['quad']
+        };
+        var targets = unitMap[preset] || unitMap.all;
+        var inputs = $('test-unit-checks').querySelectorAll('input[type="checkbox"]');
+        for (var i = 0; i < inputs.length; i++) {
+          inputs[i].checked = targets.indexOf(inputs[i].value) !== -1;
+        }
+        syncCheckboxStyles('test-unit-checks');
+      }
+
+      function startTestWithConfig(cfg) {
+        app.testConfig = cfg;
+        app.testQuestions = [];
+        app.testRecords = [];
+        app.testIdx = 0;
+        app.testElapsed = 0;
+
+        var usedSigs = new Set();
+        var prevSimKey = '';
+        var prevUnitStep = '';
+
+        for (var i = 0; i < cfg.count; i++) {
+          var bestCandidate = null;
+          var fallbackNoDup = null;
+          var lastCandidate = null;
+
+          // 最大40回リトライして「完全重複なし」かつ「直前と類似キーが異なる」問題を選出
+          for (var attempt = 0; attempt < 40; attempt++) {
+            var u = pick(cfg.units);
+            var s = pick(cfg.steps);
+            // 単元・ステップの選択肢が複数あるときは、前半リトライで同じ単元×ステップの連続もなるべく回避
+            if (attempt < 15 && (cfg.units.length * cfg.steps.length > 1) && (u + '|' + s === prevUnitStep)) {
+              continue;
+            }
+            var q = generateSingleQuestion(u, s);
+            var sig = getQuestionSignature(q);
+            var simKey = getQuestionSimilarityKey(q);
+            lastCandidate = { q: q, sig: sig, simKey: simKey };
+
+            if (!usedSigs.has(sig)) {
+              if (!fallbackNoDup) fallbackNoDup = lastCandidate;
+              if (simKey !== prevSimKey) {
+                bestCandidate = lastCandidate;
+                break;
+              }
+            }
+          }
+
+          var picked = bestCandidate || fallbackNoDup || lastCandidate;
+          app.testQuestions.push(picked.q);
+          usedSigs.add(picked.sig);
+          prevSimKey = picked.simKey;
+          prevUnitStep = picked.q.unit + '|' + picked.q.step;
+        }
+
+        stopTestTimer();
+        $('test-timer').textContent = '⏱️ 00:00';
+        app.testTimerId = setInterval(function () {
+          app.testElapsed++;
+          $('test-timer').textContent = '⏱️ ' + formatTime(app.testElapsed);
+        }, 1000);
+
+        showTestSubscreen('active');
+        renderCurrentTestQuestion();
+      }
+
+      function renderCurrentTestQuestion() {
+        var q = app.testQuestions[app.testIdx];
+        var total = app.testQuestions.length;
+        $('test-progress-label').textContent = '第 ' + (app.testIdx + 1) + ' / ' + total + ' 問';
+        $('test-progress-fill').style.width = (((app.testIdx + 1) / total) * 100) + '%';
+
+        $('test-unit-badge').textContent = UNIT_NAMES[q.unit];
+        $('test-step-badge').textContent = STEP_NAMES[q.step];
+
+        if (q.step === 's6' && q.storyHtml) {
+          $('test-story-box').innerHTML = q.storyHtml;
+          $('test-story-box').style.display = 'block';
+        } else {
+          $('test-story-box').style.display = 'none';
+        }
+
+        $('test-question-text').innerHTML = q.questionHtml;
+
+        // テスト中はステップ1のみグラフを表示（ヒント・文章題図解は隠す）
+        var vis = $('test-visual-area');
+        if (q.step === 's1' && q.svgHtml) {
+          $('test-svg-container').innerHTML = q.svgHtml;
+          vis.classList.add('visible');
+        } else {
+          $('test-svg-container').innerHTML = '';
+          vis.classList.remove('visible');
+        }
+
+        $('test-warn-box').className = 'feedback-box';
+        $('test-warn-box').innerHTML = '';
+
+        buildAnswerArea($('test-answer-area'), q, 't-');
+        syncKeypadVisibilityAndLabels();
+      }
+
+      function advanceTest(isSkip) {
+        var q = app.testQuestions[app.testIdx];
+        var record;
+
+        if (isSkip) {
+          record = {
+            q: q,
+            isCorrect: false,
+            skipped: true,
+            userAnswerHtml: '（スキップ）',
+            correctAnswerHtml: formatCorrectAnswerHtml(q),
+            oneOmissionNote: ''
+          };
+        } else {
+          var res = evaluateCurrentSlots(q);
+          if (!res.valid) {
+            var wb = $('test-warn-box');
+            wb.className = 'feedback-box warn';
+            wb.textContent = '⚠️ ' + (res.errorMsg || '解答を入力するか「わからない（スキップ）」を押してね。');
+            return;
+          }
+          record = {
+            q: q,
+            isCorrect: res.isCorrect,
+            skipped: false,
+            userAnswerHtml: res.userAnswerHtml,
+            correctAnswerHtml: formatCorrectAnswerHtml(q),
+            oneOmissionNote: res.oneOmissionNote
+          };
+        }
+
+        app.testRecords.push(record);
+
+        if (app.testIdx + 1 < app.testQuestions.length) {
+          app.testIdx++;
+          renderCurrentTestQuestion();
+        } else {
+          finishTest();
+        }
+      }
+
+      function renderBreakdown(containerEl, mapObj, nameDict) {
+        containerEl.innerHTML = '';
+        var keys = Object.keys(mapObj);
+        for (var i = 0; i < keys.length; i++) {
+          var k = keys[i];
+          var st = mapObj[k];
+          var pct = Math.round((st.ok / st.total) * 100);
+          var barCls = pct >= 80 ? '' : (pct >= 50 ? ' mid' : ' low');
+          var row = document.createElement('div');
+          row.className = 'breakdown-row';
+          row.innerHTML =
+            '<div class="breakdown-top"><span>' + nameDict[k] + '</span><span>' + st.ok + ' / ' + st.total + ' 問（' + pct + '%）</span></div>' +
+            '<div class="breakdown-bar-bg"><div class="breakdown-bar-fill' + barCls + '" style="width:' + pct + '%"></div></div>';
+          containerEl.appendChild(row);
+        }
+      }
+
+      function finishTest() {
+        stopTestTimer();
+        var total = app.testRecords.length;
+        var correct = 0;
+        var unitStats = {};
+        var stepStats = {};
+
+        for (var i = 0; i < total; i++) {
+          var r = app.testRecords[i];
+          if (r.isCorrect) correct++;
+          var u = r.q.unit, s = r.q.step;
+          if (!unitStats[u]) unitStats[u] = { ok: 0, total: 0 };
+          if (!stepStats[s]) stepStats[s] = { ok: 0, total: 0 };
+          unitStats[u].total++;
+          stepStats[s].total++;
+          if (r.isCorrect) { unitStats[u].ok++; stepStats[s].ok++; }
+        }
+
+        var score = Math.round((correct / total) * 100);
+        $('res-score').textContent = score;
+        $('res-correct').textContent = correct + ' / ' + total;
+        $('res-time').textContent = formatTime(app.testElapsed);
+
+        // スプレッドシートへ自動送信するペイロードを生成
+        var testMistakes = [];
+        for (var mi = 0; mi < total; mi++) {
+          if (!app.testRecords[mi].isCorrect) {
+            var mq = app.testRecords[mi].q;
+            testMistakes.push(UNIT_NAMES[mq.unit] + '(' + STEP_SHORT[mq.step] + ')');
+          }
+        }
+        var cfgUnitsStr = app.testConfig.units.map(function (u) { return UNIT_NAMES[u]; }).join(', ');
+        var cfgStepsStr = app.testConfig.steps.length === 6
+          ? '1〜6ミックス'
+          : app.testConfig.steps.map(function (s) { return STEP_NAMES[s]; }).join(', ');
+
+        app.lastTestPayload = {
+          studentName: app.studentName || '未入力',
+          mode: 'テスト',
+          units: cfgUnitsStr,
+          steps: cfgStepsStr,
+          total: total,
+          correct: correct,
+          score: score,
+          timeSec: app.testElapsed,
+          mistakes: summarizeMistakes(testMistakes)
+        };
+
+        setTestSyncBanner('sending', '⏳ スプレッドシートに記録中...');
+        postPayloadToGas(app.lastTestPayload).then(function () {
+          setTestSyncBanner('success', '✅ 成績を記録しました');
+        }).catch(function () {
+          enqueuePayload(app.lastTestPayload);
+          setTestSyncBanner('error', '⚠️ 送信に失敗しました（未送信に保存済）');
+        });
+
+        var rankMsg = '';
+        if (score === 100) rankMsg = '【Sランク】🏆 満点パーフェクト！素晴らしい実力です！';
+        else if (score >= 80) rankMsg = '【Aランク】🌟 素晴らしい！あと少しで満点！';
+        else if (score >= 60) rankMsg = '【Bランク】👍 あと一歩！間違えた問題を復習しよう！';
+        else rankMsg = '【Cランク】💪 復習して再挑戦しよう！練習ver.で弱点を攻略しよう！';
+        $('res-rank-msg').textContent = rankMsg;
+
+        renderBreakdown($('res-unit-breakdown'), unitStats, UNIT_NAMES);
+        renderBreakdown($('res-step-breakdown'), stepStats, STEP_NAMES);
+
+        // 全問題の振り返りリスト
+        var list = $('res-review-list');
+        list.innerHTML = '';
+        for (var idx = 0; idx < total; idx++) {
+          var rec = app.testRecords[idx];
+          var item = document.createElement('div');
+          item.className = 'review-item ' + (rec.isCorrect ? 'ok' : 'ng');
+
+          var statusHtml = rec.isCorrect
+            ? '<span class="review-status ok">⭕ 正解</span>'
+            : (rec.skipped ? '<span class="review-status ng">⏭️ スキップ</span>' : '<span class="review-status ng">❌ 不正解</span>');
+
+          var storyPart = (rec.q.step === 's6' && rec.q.storyHtml)
+            ? '<div class="review-story">' + rec.q.storyHtml + '</div>'
+            : '';
+
+          var notePart = rec.oneOmissionNote
+            ? '<div class="one-omission-note">' + rec.oneOmissionNote + '</div>'
+            : '';
+
+          var openAttr = rec.isCorrect ? '' : ' open';
+
+          item.innerHTML =
+            '<div class="review-header">' +
+              '<div class="badge-group">' +
+                '<span class="problem-badge">第' + (idx + 1) + '問</span>' +
+                '<span class="problem-badge">' + UNIT_NAMES[rec.q.unit] + '</span>' +
+                '<span class="problem-badge step-pill">' + STEP_NAMES[rec.q.step] + '</span>' +
+              '</div>' +
+              statusHtml +
+            '</div>' +
+            storyPart +
+            '<div class="review-qtext">' + rec.q.questionHtml + '</div>' +
+            '<div class="review-ans-grid">' +
+              '<div class="review-ans-col"><strong>あなたの解答</strong>' + rec.userAnswerHtml + '</div>' +
+              '<div class="review-ans-col"><strong>正解</strong>' + rec.correctAnswerHtml + '</div>' +
+            '</div>' +
+            notePart +
+            '<details class="review-details"' + openAttr + '>' +
+              '<summary>📝 解説・グラフ／図解を見る</summary>' +
+              '<div class="review-exp-content">' +
+                (rec.q.svgHtml ? '<div class="svg-container">' + rec.q.svgHtml + '</div>' : '') +
+                '<div class="review-exp-text">' + rec.q.explanationHtml + '</div>' +
+              '</div>' +
+            '</details>';
+
+          list.appendChild(item);
+        }
+
+        showTestSubscreen('result');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
+      /* =========================================================
+         11. キーパッド入力ハンドラ（練習・テスト共用・縦組み分数対応）
+      ========================================================= */
+      function handleKey(key) {
+        if (app.mode === 'test' && app.testScreen !== 'active') return;
+
+        if (key === 'SECONDARY') {
+          if (app.mode === 'practice') startNewPracticeQuestion();
+          else advanceTest(true);
+          return;
+        }
+        if (key === 'SUBMIT') {
+          if (app.mode === 'practice') submitPracticeAnswer();
+          else advanceTest(false);
+          return;
+        }
+        if (key === 'NEXT') {
+          var curF = app.fields[app.activeFieldIdx];
+          if (curF && curF.isFrac && app.activePart === 'num') {
+            setActiveTarget(app.activeFieldIdx, 'den');
+          } else if (app.fields.length > 1) {
+            var nextIdx = (app.activeFieldIdx + 1) % app.fields.length;
+            setActiveTarget(nextIdx, app.fields[nextIdx].isFrac ? 'num' : 'main');
+          }
+          return;
+        }
+
+        var f = app.fields[app.activeFieldIdx];
+        if (!f) return;
+
+        if (key === 'CLEAR') {
+          if (f.isFrac) {
+            if (app.activePart === 'den' && f.den !== '') {
+              f.den = '';
+              renderFieldDOM(app.activeFieldIdx);
+              return;
+            }
+            if (app.activePart === 'num' && f.num !== '') {
+              f.num = '';
+              renderFieldDOM(app.activeFieldIdx);
+              return;
+            }
+            f.isFrac = false;
+            f.sign = '';
+            f.num = '';
+            f.den = '';
+            app.activePart = 'main';
+            renderFieldDOM(app.activeFieldIdx);
+            return;
+          }
+          if (f.sign !== '' || f.num !== '') {
+            f.sign = '';
+            f.num = '';
+            renderFieldDOM(app.activeFieldIdx);
+          } else {
+            for (var i = 0; i < app.fields.length; i++) {
+              app.fields[i].sign = '';
+              app.fields[i].isFrac = false;
+              app.fields[i].num = '';
+              app.fields[i].den = '';
+            }
+            app.activeFieldIdx = 0;
+            app.activePart = 'main';
+            renderAllFields();
+          }
+          return;
+        }
+
+        if (key === 'BACK') {
+          if (f.kind === 'sign') {
+            f.sign = '';
+            renderFieldDOM(app.activeFieldIdx);
+            return;
+          }
+          if (f.isFrac) {
+            if (app.activePart === 'den') {
+              if (f.den !== '') {
+                f.den = f.den.slice(0, -1);
+              } else {
+                // 分母が空の状態で消す → 通常の1段枠に戻る（分子の数字は保持）
+                f.isFrac = false;
+                app.activePart = 'main';
+              }
+            } else {
+              if (f.num !== '') {
+                f.num = f.num.slice(0, -1);
+              } else if (f.sign !== '') {
+                f.sign = '';
+              }
+            }
+            renderFieldDOM(app.activeFieldIdx);
+            return;
+          }
+          if (f.num !== '') {
+            f.num = f.num.slice(0, -1);
+          } else if (f.sign !== '') {
+            f.sign = '';
+          }
+          renderFieldDOM(app.activeFieldIdx);
+          return;
+        }
+
+        if (key === 'FRAC' || key === '/') {
+          if (f.kind === 'sign' && app.activeFieldIdx + 1 < app.fields.length && app.fields[app.activeFieldIdx + 1].allowFrac) {
+            setActiveTarget(app.activeFieldIdx + 1, 'main');
+            f = app.fields[app.activeFieldIdx];
+          }
+          if (!f.allowFrac) return;
+          if (!f.isFrac) {
+            f.isFrac = true;
+            // すでに入力済みの数字があれば分子に入った状態で分母へフォーカス移動
+            app.activePart = (f.num !== '') ? 'den' : 'num';
+            renderFieldDOM(app.activeFieldIdx);
+          } else if (app.activePart === 'num') {
+            app.activePart = 'den';
+            renderFieldDOM(app.activeFieldIdx);
+          } else if (f.den === '') {
+            f.isFrac = false;
+            app.activePart = 'main';
+            renderFieldDOM(app.activeFieldIdx);
+          }
+          return;
+        }
+
+        if (key === '+' || key === '-') {
+          if (f.kind === 'sign') {
+            f.sign = key;
+            renderFieldDOM(app.activeFieldIdx);
+            if (app.activeFieldIdx + 1 < app.fields.length) {
+              var nextF = app.fields[app.activeFieldIdx + 1];
+              setActiveTarget(app.activeFieldIdx + 1, nextF.isFrac ? 'num' : 'main');
+            }
+            return;
+          }
+          if (!f.allowSign) {
+            var prevIdx = app.activeFieldIdx - 1;
+            if (prevIdx >= 0 && app.fields[prevIdx].kind === 'sign') {
+              app.fields[prevIdx].sign = key;
+              renderFieldDOM(prevIdx);
+            }
+            return;
+          }
+          f.sign = key;
+          renderFieldDOM(app.activeFieldIdx);
+          return;
+        }
+
+        if (/^\d$/.test(key)) {
+          if (f.kind === 'sign') {
+            if (app.activeFieldIdx + 1 < app.fields.length) {
+              var nf = app.fields[app.activeFieldIdx + 1];
+              setActiveTarget(app.activeFieldIdx + 1, nf.isFrac ? 'num' : 'main');
+              f = app.fields[app.activeFieldIdx];
+            } else {
+              return;
+            }
+          }
+          if (f.isFrac) {
+            if (app.activePart === 'den') {
+              if (f.den.length < 4) {
+                f.den += key;
+                renderFieldDOM(app.activeFieldIdx);
+              }
+            } else {
+              if (f.num.length < 5) {
+                f.num += key;
+                renderFieldDOM(app.activeFieldIdx);
+              }
+            }
+          } else {
+            if (f.num.length < 6) {
+              f.num += key;
+              renderFieldDOM(app.activeFieldIdx);
+            }
+          }
+        }
+      }
+
+      /* =========================================================
+         12. モード切替 & 初期化
+      ========================================================= */
+      function switchMode(newMode) {
+        if (app.mode === newMode) return;
+        if (app.mode === 'test' && app.testScreen === 'active') {
+          // テスト中に切り替えようとした場合は確認モーダルを開く
+          pendingModalAction = function () {
+            stopTestTimer();
+            app.testScreen = 'setup';
+            applyModeSwitch(newMode);
+          };
+          $('confirm-modal').classList.add('open');
+          return;
+        }
+        applyModeSwitch(newMode);
+      }
+
+      function applyModeSwitch(newMode) {
+        app.mode = newMode;
+        var modeBtns = document.querySelectorAll('.mode-btn');
+        for (var i = 0; i < modeBtns.length; i++) {
+          var isAct = modeBtns[i].getAttribute('data-mode') === newMode;
+          modeBtns[i].classList.toggle('active', isAct);
+          modeBtns[i].setAttribute('aria-selected', isAct ? 'true' : 'false');
+        }
+
+        $('practice-view').classList.toggle('active', newMode === 'practice');
+        $('test-view').classList.toggle('active', newMode === 'test');
+        $('practice-score-badges').style.display = newMode === 'practice' ? 'flex' : 'none';
+
+        if (newMode === 'practice') {
+          if (app.pQ) buildAnswerArea($('practice-answer-area'), app.pQ, 'p-');
+        } else {
+          showTestSubscreen(app.testScreen);
+        }
+        syncKeypadVisibilityAndLabels();
+      }
+
+      var pendingModalAction = null;
+
+      function init() {
+        // トップレベル モード切替
+        var modeBtns = document.querySelectorAll('.mode-btn');
+        for (var m = 0; m < modeBtns.length; m++) {
+          modeBtns[m].addEventListener('click', function () {
+            switchMode(this.getAttribute('data-mode'));
+          });
+        }
+
+        // 練習ver. 単元タブ
+        var unitBtns = document.querySelectorAll('.unit-tab');
+        for (var i = 0; i < unitBtns.length; i++) {
+          unitBtns[i].addEventListener('click', function () {
+            app.pUnit = this.getAttribute('data-unit');
+            for (var j = 0; j < unitBtns.length; j++) unitBtns[j].classList.toggle('active', unitBtns[j] === this);
+            startNewPracticeQuestion();
+          });
+        }
+
+        // 練習ver. ステップタブ
+        var stepBtns = document.querySelectorAll('.step-tab');
+        for (var s = 0; s < stepBtns.length; s++) {
+          stepBtns[s].addEventListener('click', function () {
+            app.pStep = this.getAttribute('data-step');
+            for (var j = 0; j < stepBtns.length; j++) stepBtns[j].classList.toggle('active', stepBtns[j] === this);
+            startNewPracticeQuestion();
+          });
+        }
+
+        // 練習ver. ステップ6 小問タブ
+        for (var k = 0; k < 3; k++) {
+          (function (idx) {
+            $('subq-btn-' + idx).addEventListener('click', function () { selectWordSub(idx); });
+          })(k);
+        }
+
+        // 練習ver. ヒント／グラフ切替
+        $('visual-toggle-btn').addEventListener('click', function () {
+          app.visualOpen = !app.visualOpen;
+          updatePracticeVisual();
+        });
+
+        // 練習ver. 解説を見る
+        $('show-exp-btn').addEventListener('click', function () {
+          $('explanation-body').innerHTML = app.pQ.explanationHtml;
+          $('explanation-box').style.display = 'block';
+          this.style.display = 'none';
+          if (!app.visualOpen && app.pQ.svgHtml) {
+            app.visualOpen = true;
+            updatePracticeVisual();
+          }
+          var nextBtn = $('next-btn');
+          if (app.pStep === 's6' && app.wordSet) {
+            if (app.wordSubIdx === 0) {
+              app.wordEqRevealed = true;
+              updateWordSubTabsUI();
+            }
+            nextBtn.textContent = app.wordSubIdx < 2 ? '次の小問へ ➔' : '次の大問へ ➔';
+          } else {
+            nextBtn.textContent = '次の問題へ ➔';
+          }
+          nextBtn.style.display = 'block';
+        });
+
+        // 練習ver. 次の問題／小問へ
+        $('next-btn').addEventListener('click', function () {
+          if (app.pStep === 's6' && app.wordSet && app.wordSubIdx < 2) selectWordSub(app.wordSubIdx + 1);
+          else startNewPracticeQuestion();
+        });
+
+        // テストver. プリセット
+        var presetBtns = document.querySelectorAll('.preset-btn');
+        for (var p = 0; p < presetBtns.length; p++) {
+          presetBtns[p].addEventListener('click', function () {
+            applyPreset(this.getAttribute('data-preset'));
+          });
+        }
+
+        // テストver. チェックボックスの見た目同期
+        $('test-unit-checks').addEventListener('change', function () { syncCheckboxStyles('test-unit-checks'); });
+        $('test-step-checks').addEventListener('change', function () { syncCheckboxStyles('test-step-checks'); });
+
+        // テストver. 問題数選択
+        var countBtns = document.querySelectorAll('.count-btn');
+        for (var c = 0; c < countBtns.length; c++) {
+          countBtns[c].addEventListener('click', function () {
+            app.testCount = parseInt(this.getAttribute('data-count'), 10);
+            for (var j = 0; j < countBtns.length; j++) countBtns[j].classList.toggle('active', countBtns[j] === this);
+          });
+        }
+
+        // テストver. 開始ボタン
+        $('start-test-btn').addEventListener('click', function () {
+          var units = getCheckedValues('test-unit-checks');
+          var steps = getCheckedValues('test-step-checks');
+          var errBox = $('setup-error-box');
+          if (units.length === 0 || steps.length === 0) {
+            errBox.className = 'feedback-box wrong';
+            errBox.textContent = '⚠️ 単元とステップをそれぞれ1つ以上選んでください。';
+            return;
+          }
+          errBox.className = 'feedback-box';
+          errBox.textContent = '';
+          var cfg = { units: units, steps: steps, count: app.testCount };
+          if (!app.studentName) {
+            openStudentModal({
+              title: '👤 テスト前に名前を登録しよう',
+              desc: 'スプレッドシートに成績を記録するため、名前または生徒IDを入力してください（スキップも可能です）。',
+              saveLabel: '保存して開始',
+              skipLabel: '未入力で開始',
+              onDone: function () { startTestWithConfig(cfg); }
+            });
+          } else {
+            startTestWithConfig(cfg);
+          }
+        });
+
+        // 生徒名登録・変更モーダル関連
+        $('student-badge-btn').addEventListener('click', function () {
+          openStudentModal();
+        });
+
+        $('student-save-btn').addEventListener('click', function () {
+          saveStudentName($('student-name-input').value);
+          closeStudentModal(true);
+        });
+
+        $('student-skip-btn').addEventListener('click', function () {
+          closeStudentModal(true);
+        });
+
+        $('student-name-input').addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            saveStudentName(this.value);
+            closeStudentModal(true);
+          }
+        });
+
+        // 未送信キュー再送信ボタン（ヘッダー）
+        $('queue-retry-btn').addEventListener('click', function () {
+          flushUnsentQueue();
+        });
+
+        // 練習記録の送信ボタン
+        $('practice-send-btn').addEventListener('click', function () {
+          sendPracticeSessionRecord();
+        });
+
+        // テスト結果画面の再送信ボタン
+        $('test-sync-retry-btn').addEventListener('click', function () {
+          if (!app.lastTestPayload) return;
+          setTestSyncBanner('sending', '⏳ 再送信中...');
+          if (app.unsentQueue.length > 0) {
+            flushUnsentQueue().then(function () {
+              if (app.unsentQueue.length === 0) {
+                setTestSyncBanner('success', '✅ 成績を記録しました');
+              } else {
+                setTestSyncBanner('error', '⚠️ 送信に失敗しました');
+              }
+            });
+          } else {
+            postPayloadToGas(app.lastTestPayload).then(function () {
+              setTestSyncBanner('success', '✅ 成績を記録しました');
+            }).catch(function () {
+              enqueuePayload(app.lastTestPayload);
+              setTestSyncBanner('error', '⚠️ 送信に失敗しました');
+            });
+          }
+        });
+
+        // テストver. 中断ボタン → カスタムモーダル
+        $('test-abort-btn').addEventListener('click', function () {
+          pendingModalAction = function () {
+            stopTestTimer();
+            showTestSubscreen('setup');
+          };
+          $('confirm-modal').classList.add('open');
+        });
+
+        $('modal-cancel-btn').addEventListener('click', function () {
+          $('confirm-modal').classList.remove('open');
+          pendingModalAction = null;
+        });
+
+        $('modal-ok-btn').addEventListener('click', function () {
+          $('confirm-modal').classList.remove('open');
+          if (typeof pendingModalAction === 'function') {
+            var fn = pendingModalAction;
+            pendingModalAction = null;
+            fn();
+          }
+        });
+
+        // テストver. 結果画面アクション
+        $('res-retry-btn').addEventListener('click', function () {
+          startTestWithConfig(app.testConfig);
+        });
+        $('res-setup-btn').addEventListener('click', function () {
+          showTestSubscreen('setup');
+        });
+        $('res-practice-btn').addEventListener('click', function () {
+          app.testScreen = 'setup';
+          applyModeSwitch('practice');
+        });
+
+        // カスタムキーパッド
+        var keys = document.querySelectorAll('.key-btn');
+        for (var b = 0; b < keys.length; b++) {
+          keys[b].addEventListener('click', function () {
+            handleKey(this.getAttribute('data-key'));
+          });
+        }
+
+        // PC物理キーボード対応
+        document.addEventListener('keydown', function (e) {
+          if ($('confirm-modal').classList.contains('open')) return;
+          if ($('student-modal').classList.contains('open')) return;
+          var tag = document.activeElement ? document.activeElement.tagName : '';
+          if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+          if (app.mode === 'test' && app.testScreen !== 'active') return;
+          if (e.key >= '0' && e.key <= '9') handleKey(e.key);
+          else if (e.key === '+' || e.key === '-') handleKey(e.key);
+          else if (e.key === '/') { e.preventDefault(); handleKey('FRAC'); }
+          else if (e.key === 'Backspace') handleKey('BACK');
+          else if (e.key === 'Tab') { e.preventDefault(); handleKey('NEXT'); }
+          else if (e.key === 'Enter') { e.preventDefault(); handleKey('SUBMIT'); }
+        });
+
+        loadStudentData();
+        updatePracticeLogBarUI();
+        startNewPracticeQuestion();
+        syncKeypadVisibilityAndLabels();
+
+        // 初回起動時に生徒名が未設定なら軽く入力を促す（スキップ可能）
+        if (!app.studentName) {
+          openStudentModal();
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+    })();
+  </script>
+</body>
+</html>
