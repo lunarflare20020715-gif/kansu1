@@ -302,6 +302,43 @@
       box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.18);
     }
 
+    .modal-fields {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      text-align: left;
+    }
+
+    .modal-field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .modal-label {
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: var(--slate-700);
+      padding-left: 2px;
+    }
+
+    .modal-error {
+      display: none;
+      background: var(--rose-light);
+      border: 1.5px solid var(--rose-border);
+      color: #be123c;
+      border-radius: var(--radius-sm);
+      padding: 7px 10px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      text-align: left;
+      line-height: 1.4;
+    }
+
+    .modal-error.visible {
+      display: block;
+    }
+
     .modal-btn.primary {
       background: var(--indigo);
       border-color: var(--indigo-dark);
@@ -1838,9 +1875,19 @@
   <!-- 生徒名・ID登録モーダル -->
   <div id="student-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="student-modal-title">
     <div class="modal-box">
-      <h2 id="student-modal-title" class="modal-title">👤 生徒名・IDを登録</h2>
+      <h2 id="student-modal-title" class="modal-title">👤 生徒ID・氏名を登録</h2>
       <p id="student-modal-desc" class="modal-desc">スプレッドシートの成績記録に使用します（後からヘッダーでいつでも変更できます）。</p>
-      <input type="text" id="student-name-input" class="modal-input" placeholder="例：101 山田太郎" maxlength="30" autocomplete="off">
+      <div class="modal-fields">
+        <div class="modal-field-group">
+          <label for="student-id-input" class="modal-label">生徒ID（半角数字）</label>
+          <input type="text" id="student-id-input" class="modal-input" inputmode="numeric" pattern="[0-9]*" placeholder="例：101" maxlength="10" autocomplete="off">
+        </div>
+        <div class="modal-field-group">
+          <label for="student-name-input" class="modal-label">氏名</label>
+          <input type="text" id="student-name-input" class="modal-input" placeholder="例：さくら" maxlength="24" autocomplete="off">
+        </div>
+      </div>
+      <div id="student-modal-error" class="modal-error" aria-live="polite"></div>
       <div class="modal-actions">
         <button type="button" id="student-skip-btn" class="modal-btn">スキップ</button>
         <button type="button" id="student-save-btn" class="modal-btn primary">保存する</button>
@@ -2255,6 +2302,7 @@
          5. 定数 & 状態管理
       ========================================================= */
       var GAS_URL = 'https://script.google.com/macros/s/AKfycbwn5pT3zsNajumvtbmhFzerWxVH7Huic0R_oGpzcYFM0ghajlx3uqMRimbcX5k7nzNh/exec';
+      var STORAGE_ID_KEY = 'compass_func_student_id';
       var STORAGE_NAME_KEY = 'compass_func_student_name';
       var STORAGE_QUEUE_KEY = 'compass_func_unsent_queue';
 
@@ -2278,6 +2326,7 @@
 
       var app = {
         mode: 'practice', // 'practice' | 'test'
+        studentId: '',
         studentName: '',
         unsentQueue: [],
         studentModalCallback: null,
@@ -2324,11 +2373,65 @@
       /* =========================================================
          5B. 生徒名管理 & GASスプレッドシート連携（未送信キュー付）
       ========================================================= */
+      function normalizeStudentId(raw) {
+        return String(raw || '')
+          .replace(/[０-９]/g, function (ch) {
+            return String.fromCharCode(ch.charCodeAt(0) - 0xFEE0);
+          })
+          .replace(/[^0-9]/g, '');
+      }
+
+      function getFullStudentLabel() {
+        if (app.studentId && app.studentName) return app.studentId + ' ' + app.studentName;
+        if (app.studentId) return app.studentId;
+        if (app.studentName) return app.studentName;
+        return '';
+      }
+
+      function isStudentRegistered() {
+        return app.studentId !== '' && app.studentName !== '';
+      }
+
+      function showStudentModalError(msg) {
+        var errEl = $('student-modal-error');
+        if (!errEl) return;
+        if (msg) {
+          errEl.textContent = msg;
+          errEl.classList.add('visible');
+        } else {
+          errEl.textContent = '';
+          errEl.classList.remove('visible');
+        }
+      }
+
       function loadStudentData() {
+        var savedId = '';
+        var savedName = '';
         try {
-          var saved = localStorage.getItem(STORAGE_NAME_KEY);
-          if (saved) app.studentName = saved.trim();
+          savedId = localStorage.getItem(STORAGE_ID_KEY) || '';
+          savedName = localStorage.getItem(STORAGE_NAME_KEY) || '';
         } catch (e) {}
+
+        savedId = normalizeStudentId(savedId);
+        savedName = savedName.trim();
+
+        // 既存の単一フィールド登録データ（例：「101 さくら」「101さくら」）がある場合は自動移行
+        if (!savedId && savedName) {
+          var legacyMatch = savedName.match(/^([0-9０-９]+)[\s　]*(.*)$/);
+          if (legacyMatch) {
+            savedId = normalizeStudentId(legacyMatch[1]);
+            savedName = (legacyMatch[2] || '').trim();
+            try {
+              if (savedId) localStorage.setItem(STORAGE_ID_KEY, savedId);
+              if (savedName) localStorage.setItem(STORAGE_NAME_KEY, savedName);
+              else localStorage.removeItem(STORAGE_NAME_KEY);
+            } catch (e) {}
+          }
+        }
+
+        app.studentId = savedId;
+        app.studentName = savedName;
+
         try {
           var qRaw = localStorage.getItem(STORAGE_QUEUE_KEY);
           if (qRaw) {
@@ -2340,9 +2443,12 @@
         updateQueueBadgeUI();
       }
 
-      function saveStudentName(name) {
-        app.studentName = (name || '').trim();
+      function saveStudentInfo(idVal, nameVal) {
+        app.studentId = normalizeStudentId(idVal);
+        app.studentName = (nameVal || '').trim();
         try {
+          if (app.studentId) localStorage.setItem(STORAGE_ID_KEY, app.studentId);
+          else localStorage.removeItem(STORAGE_ID_KEY);
           if (app.studentName) localStorage.setItem(STORAGE_NAME_KEY, app.studentName);
           else localStorage.removeItem(STORAGE_NAME_KEY);
         } catch (e) {}
@@ -2359,8 +2465,9 @@
       function updateStudentBadgeUI() {
         var btn = $('student-badge-btn');
         if (!btn) return;
-        if (app.studentName) {
-          btn.textContent = '👤 ' + app.studentName;
+        var label = getFullStudentLabel();
+        if (label) {
+          btn.textContent = '👤 ' + label;
           btn.classList.remove('unset');
         } else {
           btn.textContent = '👤 名前を設定';
@@ -2382,20 +2489,55 @@
 
       function openStudentModal(opts) {
         opts = opts || {};
-        $('student-modal-title').textContent = opts.title || '👤 生徒名・IDを登録';
+        $('student-modal-title').textContent = opts.title || '👤 生徒ID・氏名を登録';
         $('student-modal-desc').textContent = opts.desc || 'スプレッドシートの成績記録に使用します（後からヘッダーでいつでも変更できます）。';
         $('student-save-btn').textContent = opts.saveLabel || '保存する';
         $('student-skip-btn').textContent = opts.skipLabel || 'スキップ';
+        $('student-id-input').value = app.studentId || '';
         $('student-name-input').value = app.studentName || '';
+        showStudentModalError('');
         app.studentModalCallback = opts.onDone || null;
         $('student-modal').classList.add('open');
         setTimeout(function () {
-          try { $('student-name-input').focus(); } catch (e) {}
+          try {
+            if (!app.studentId) $('student-id-input').focus();
+            else $('student-name-input').focus();
+          } catch (e) {}
         }, 50);
+      }
+
+      function validateAndSaveStudentModal() {
+        var idInput = $('student-id-input');
+        var nameInput = $('student-name-input');
+        var cleanId = normalizeStudentId(idInput.value);
+        idInput.value = cleanId;
+        var cleanName = (nameInput.value || '').trim();
+
+        if (!cleanId && !cleanName) {
+          showStudentModalError('⚠️ 生徒ID（半角数字）と氏名の両方を入力してください。');
+          idInput.focus();
+          return false;
+        }
+        if (!cleanId) {
+          showStudentModalError('⚠️ 生徒IDを半角数字で入力してください。');
+          idInput.focus();
+          return false;
+        }
+        if (!cleanName) {
+          showStudentModalError('⚠️ 氏名を入力してください。');
+          nameInput.focus();
+          return false;
+        }
+
+        showStudentModalError('');
+        saveStudentInfo(cleanId, cleanName);
+        closeStudentModal(true);
+        return true;
       }
 
       function closeStudentModal(runCallback) {
         $('student-modal').classList.remove('open');
+        showStudentModalError('');
         var cb = app.studentModalCallback;
         app.studentModalCallback = null;
         if (runCallback && typeof cb === 'function') cb();
@@ -2512,7 +2654,9 @@
           : (stepKeys.map(function (s) { return STEP_NAMES[s]; }).join(', ') || STEP_NAMES[app.pStep]);
 
         var payload = {
-          studentName: app.studentName || '未入力',
+          studentName: getFullStudentLabel() || '未入力',
+          studentId: app.studentId || '',
+          studentRawName: app.studentName || '',
           mode: '練習',
           units: unitsStr,
           steps: stepsStr,
@@ -4058,7 +4202,9 @@
           : app.testConfig.steps.map(function (s) { return STEP_NAMES[s]; }).join(', ');
 
         app.lastTestPayload = {
-          studentName: app.studentName || '未入力',
+          studentName: getFullStudentLabel() || '未入力',
+          studentId: app.studentId || '',
+          studentRawName: app.studentName || '',
           mode: 'テスト',
           units: cfgUnitsStr,
           steps: cfgStepsStr,
@@ -4463,16 +4609,63 @@
           errBox.className = 'feedback-box';
           errBox.textContent = '';
           var cfg = { units: units, steps: steps, count: app.testCount };
-          if (!app.studentName) {
+          if (!isStudentRegistered()) {
             openStudentModal({
-              title: '👤 テスト前に名前を登録しよう',
-              desc: 'スプレッドシートに成績を記録するため、名前または生徒IDを入力してください（スキップも可能です）。',
+              title: '👤 テスト前にID・氏名を登録しよう',
+              desc: 'スプレッドシートに成績を記録するため、生徒ID（半角数字）と氏名を入力してください（スキップも可能です）。',
               saveLabel: '保存して開始',
               skipLabel: '未入力で開始',
               onDone: function () { startTestWithConfig(cfg); }
             });
           } else {
             startTestWithConfig(cfg);
+          }
+        });
+
+        // 生徒名登録・変更モーダル関連
+        $('student-badge-btn').addEventListener('click', function () {
+          openStudentModal();
+        });
+
+        $('student-id-input').addEventListener('input', function () {
+          var raw = this.value;
+          var converted = raw.replace(/[０-９]/g, function (ch) {
+            return String.fromCharCode(ch.charCodeAt(0) - 0xFEE0);
+          });
+          var cleaned = converted.replace(/[^0-9]/g, '');
+          if (cleaned !== raw) {
+            this.value = cleaned;
+          }
+          if (/[^0-9]/.test(converted)) {
+            showStudentModalError('⚠️ 生徒IDは半角数字のみ入力できます（数字以外の文字を除去しました）。');
+          } else {
+            showStudentModalError('');
+          }
+        });
+
+        $('student-id-input').addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            $('student-name-input').focus();
+          }
+        });
+
+        $('student-name-input').addEventListener('input', function () {
+          if (this.value.trim() !== '') showStudentModalError('');
+        });
+
+        $('student-save-btn').addEventListener('click', function () {
+          validateAndSaveStudentModal();
+        });
+
+        $('student-skip-btn').addEventListener('click', function () {
+          closeStudentModal(true);
+        });
+
+        $('student-name-input').addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            validateAndSaveStudentModal();
           }
         });
 
@@ -4593,8 +4786,8 @@
         startNewPracticeQuestion();
         syncKeypadVisibilityAndLabels();
 
-        // 初回起動時に生徒名が未設定なら軽く入力を促す（スキップ可能）
-        if (!app.studentName) {
+        // 初回起動時に生徒IDまたは氏名が未設定なら軽く入力を促す（スキップ可能）
+        if (!isStudentRegistered()) {
           openStudentModal();
         }
       }
