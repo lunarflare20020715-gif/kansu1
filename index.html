@@ -2404,44 +2404,62 @@
         }
       }
 
-      function loadStudentData() {
-        var savedId = '';
-        var savedName = '';
-        try {
-          savedId = localStorage.getItem(STORAGE_ID_KEY) || '';
-          savedName = localStorage.getItem(STORAGE_NAME_KEY) || '';
-        } catch (e) {}
+      */
+function loadStudentData() {
+  // 1. 勉強管理アプリからURLで渡された生徒ID・氏名を取得
+  var params = new URLSearchParams(window.location.search);
+  var rawUrlId = (params.get('studentId') || '').trim();
+  var urlId = normalizeStudentId(rawUrlId) || rawUrlId;
+  var urlName = (params.get('studentName') || '').trim();
 
-        savedId = normalizeStudentId(savedId);
-        savedName = savedName.trim();
+  // 2. 端末に保存済みの値を読み込み
+  var savedId = '';
+  var savedName = '';
+  try {
+    savedId = localStorage.getItem(STORAGE_ID_KEY) || '';
+    savedName = localStorage.getItem(STORAGE_NAME_KEY) || '';
+  } catch (e) {}
 
-        // 既存の単一フィールド登録データ（例：「101 さくら」「101さくら」）がある場合は自動移行
-        if (!savedId && savedName) {
-          var legacyMatch = savedName.match(/^([0-9０-９]+)[\s　]*(.*)$/);
-          if (legacyMatch) {
-            savedId = normalizeStudentId(legacyMatch[1]);
-            savedName = (legacyMatch[2] || '').trim();
-            try {
-              if (savedId) localStorage.setItem(STORAGE_ID_KEY, savedId);
-              if (savedName) localStorage.setItem(STORAGE_NAME_KEY, savedName);
-              else localStorage.removeItem(STORAGE_NAME_KEY);
-            } catch (e) {}
-          }
-        }
+  savedId = normalizeStudentId(savedId) || savedId.trim();
+  savedName = savedName.trim();
 
-        app.studentId = savedId;
-        app.studentName = savedName;
+  // 既存の単一フィールド登録データ（例：「101 さくら」）がある場合は自動移行
+  if (!savedId && savedName) {
+    var legacyMatch = savedName.match(/^([0-9０-９]+)[\s　]*(.*)$/);
+    if (legacyMatch) {
+      savedId = normalizeStudentId(legacyMatch[1]);
+      savedName = (legacyMatch[2] || '').trim();
+      try {
+        if (savedId) localStorage.setItem(STORAGE_ID_KEY, savedId);
+        if (savedName) localStorage.setItem(STORAGE_NAME_KEY, savedName);
+        else localStorage.removeItem(STORAGE_NAME_KEY);
+      } catch (e) {}
+    }
+  }
 
-        try {
-          var qRaw = localStorage.getItem(STORAGE_QUEUE_KEY);
-          if (qRaw) {
-            var parsed = JSON.parse(qRaw);
-            if (Array.isArray(parsed)) app.unsentQueue = parsed;
-          }
-        } catch (e) {}
-        updateStudentBadgeUI();
-        updateQueueBadgeUI();
-      }
+  // 3. URLパラメータがあれば最優先でセットし、ローカルにも保存
+  app.studentId = urlId || savedId;
+  app.studentName = urlName || savedName;
+
+  if (urlId || urlName) {
+    try {
+      if (app.studentId) localStorage.setItem(STORAGE_ID_KEY, app.studentId);
+      if (app.studentName) localStorage.setItem(STORAGE_NAME_KEY, app.studentName);
+    } catch (e) {}
+  }
+
+  // 4. 未送信キューの復元
+  try {
+    var qRaw = localStorage.getItem(STORAGE_QUEUE_KEY);
+    if (qRaw) {
+      var parsed = JSON.parse(qRaw);
+      if (Array.isArray(parsed)) app.unsentQueue = parsed;
+    }
+  } catch (e) {}
+
+  updateStudentBadgeUI();
+  updateQueueBadgeUI();
+}
 
       function saveStudentInfo(idVal, nameVal) {
         app.studentId = normalizeStudentId(idVal);
@@ -4669,27 +4687,7 @@
           }
         });
 
-        // 生徒名登録・変更モーダル関連
-        $('student-badge-btn').addEventListener('click', function () {
-          openStudentModal();
-        });
-
-        $('student-save-btn').addEventListener('click', function () {
-          saveStudentName($('student-name-input').value);
-          closeStudentModal(true);
-        });
-
-        $('student-skip-btn').addEventListener('click', function () {
-          closeStudentModal(true);
-        });
-
-        $('student-name-input').addEventListener('keydown', function (e) {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            saveStudentName(this.value);
-            closeStudentModal(true);
-          }
-        });
+    
 
         // 未送信キュー再送信ボタン（ヘッダー）
         $('queue-retry-btn').addEventListener('click', function () {
