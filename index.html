@@ -1588,6 +1588,23 @@
       .key-btn { height: 42px; font-size: 1.02rem; }
     }
   </style>
+  <script>
+  (function () {
+    // 元のHTML内に残っている未定義関数エラー（saveStudentName）を防止
+    window.saveStudentName = function () {};
+
+    // 勉強管理アプリからURLで渡された ?studentId=...&studentName=... を受け取る
+    try {
+      var params = new URLSearchParams(window.location.search);
+      var urlId = (params.get('studentId') || '').trim();
+      var urlName = (params.get('studentName') || '').trim();
+
+      // 本体スクリプトが読み込まれる前に localStorage へ書き込んでおく
+      if (urlId) localStorage.setItem('compass_func_student_id', urlId);
+      if (urlName) localStorage.setItem('compass_func_student_name', urlName);
+    } catch (e) {}
+  })();
+</script>
 </head>
 <body>
   <div class="app-shell">
