@@ -1593,16 +1593,46 @@
     // 元のHTML内に残っている未定義関数エラー（saveStudentName）を防止
     window.saveStudentName = function () {};
 
-    // 勉強管理アプリからURLで渡された ?studentId=...&studentName=... を受け取る
-    try {
-      var params = new URLSearchParams(window.location.search);
-      var urlId = (params.get('studentId') || '').trim();
-      var urlName = (params.get('studentName') || '').trim();
+    function getUrlProfile() {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var urlId = (params.get('studentId') || '').trim();
+        var urlName = (params.get('studentName') || '').trim();
+        return { urlId: urlId, urlName: urlName };
+      } catch (e) {
+        return { urlId: '', urlName: '' };
+      }
+    }
 
-      // 本体スクリプトが読み込まれる前に localStorage へ書き込んでおく
-      if (urlId) localStorage.setItem('compass_func_student_id', urlId);
-      if (urlName) localStorage.setItem('compass_func_student_name', urlName);
+    // 1. 本体スクリプト読み込み前に localStorage へ保存しておく
+    var prof = getUrlProfile();
+    try {
+      if (prof.urlId) localStorage.setItem('compass_func_student_id', prof.urlId);
+      if (prof.urlName) localStorage.setItem('compass_func_student_name', prof.urlName);
     } catch (e) {}
+
+    // 2. 二重保険：iframe内で localStorage が制限された場合でも自動入力＆保存する
+    window.addEventListener('load', function () {
+      setTimeout(function () {
+        try {
+          var p = getUrlProfile();
+          if (!p.urlId && !p.urlName) return;
+
+          var badge = document.getElementById('student-badge-btn');
+          if (badge && !badge.classList.contains('unset')) return;
+
+          var idInput = document.getElementById('student-id-input');
+          var nameInput = document.getElementById('student-name-input');
+          var saveBtn = document.getElementById('student-save-btn');
+
+          if (idInput && p.urlId) idInput.value = p.urlId;
+          if (nameInput && p.urlName) nameInput.value = p.urlName;
+          if (saveBtn && p.urlId && p.urlName) {
+            saveBtn.click();
+          }
+        } catch (e) {}
+      }, 100);
+    });
   })();
 </script>
 </head>
@@ -2421,62 +2451,44 @@
         }
       }
 
-      */
-function loadStudentData() {
-  // 1. 勉強管理アプリからURLで渡された生徒ID・氏名を取得
-  var params = new URLSearchParams(window.location.search);
-  var rawUrlId = (params.get('studentId') || '').trim();
-  var urlId = normalizeStudentId(rawUrlId) || rawUrlId;
-  var urlName = (params.get('studentName') || '').trim();
+      function loadStudentData() {
+        var savedId = '';
+        var savedName = '';
+        try {
+          savedId = localStorage.getItem(STORAGE_ID_KEY) || '';
+          savedName = localStorage.getItem(STORAGE_NAME_KEY) || '';
+        } catch (e) {}
 
-  // 2. 端末に保存済みの値を読み込み
-  var savedId = '';
-  var savedName = '';
-  try {
-    savedId = localStorage.getItem(STORAGE_ID_KEY) || '';
-    savedName = localStorage.getItem(STORAGE_NAME_KEY) || '';
-  } catch (e) {}
+        savedId = normalizeStudentId(savedId);
+        savedName = savedName.trim();
 
-  savedId = normalizeStudentId(savedId) || savedId.trim();
-  savedName = savedName.trim();
+        // 既存の単一フィールド登録データ（例：「101 さくら」「101さくら」）がある場合は自動移行
+        if (!savedId && savedName) {
+          var legacyMatch = savedName.match(/^([0-9０-９]+)[\s　]*(.*)$/);
+          if (legacyMatch) {
+            savedId = normalizeStudentId(legacyMatch[1]);
+            savedName = (legacyMatch[2] || '').trim();
+            try {
+              if (savedId) localStorage.setItem(STORAGE_ID_KEY, savedId);
+              if (savedName) localStorage.setItem(STORAGE_NAME_KEY, savedName);
+              else localStorage.removeItem(STORAGE_NAME_KEY);
+            } catch (e) {}
+          }
+        }
 
-  // 既存の単一フィールド登録データ（例：「101 さくら」）がある場合は自動移行
-  if (!savedId && savedName) {
-    var legacyMatch = savedName.match(/^([0-9０-９]+)[\s　]*(.*)$/);
-    if (legacyMatch) {
-      savedId = normalizeStudentId(legacyMatch[1]);
-      savedName = (legacyMatch[2] || '').trim();
-      try {
-        if (savedId) localStorage.setItem(STORAGE_ID_KEY, savedId);
-        if (savedName) localStorage.setItem(STORAGE_NAME_KEY, savedName);
-        else localStorage.removeItem(STORAGE_NAME_KEY);
-      } catch (e) {}
-    }
-  }
+        app.studentId = savedId;
+        app.studentName = savedName;
 
-  // 3. URLパラメータがあれば最優先でセットし、ローカルにも保存
-  app.studentId = urlId || savedId;
-  app.studentName = urlName || savedName;
-
-  if (urlId || urlName) {
-    try {
-      if (app.studentId) localStorage.setItem(STORAGE_ID_KEY, app.studentId);
-      if (app.studentName) localStorage.setItem(STORAGE_NAME_KEY, app.studentName);
-    } catch (e) {}
-  }
-
-  // 4. 未送信キューの復元
-  try {
-    var qRaw = localStorage.getItem(STORAGE_QUEUE_KEY);
-    if (qRaw) {
-      var parsed = JSON.parse(qRaw);
-      if (Array.isArray(parsed)) app.unsentQueue = parsed;
-    }
-  } catch (e) {}
-
-  updateStudentBadgeUI();
-  updateQueueBadgeUI();
-}
+        try {
+          var qRaw = localStorage.getItem(STORAGE_QUEUE_KEY);
+          if (qRaw) {
+            var parsed = JSON.parse(qRaw);
+            if (Array.isArray(parsed)) app.unsentQueue = parsed;
+          }
+        } catch (e) {}
+        updateStudentBadgeUI();
+        updateQueueBadgeUI();
+      }
 
       function saveStudentInfo(idVal, nameVal) {
         app.studentId = normalizeStudentId(idVal);
@@ -4704,7 +4716,27 @@ function loadStudentData() {
           }
         });
 
-    
+        // 生徒名登録・変更モーダル関連
+        $('student-badge-btn').addEventListener('click', function () {
+          openStudentModal();
+        });
+
+        $('student-save-btn').addEventListener('click', function () {
+          saveStudentName($('student-name-input').value);
+          closeStudentModal(true);
+        });
+
+        $('student-skip-btn').addEventListener('click', function () {
+          closeStudentModal(true);
+        });
+
+        $('student-name-input').addEventListener('keydown', function (e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            saveStudentName(this.value);
+            closeStudentModal(true);
+          }
+        });
 
         // 未送信キュー再送信ボタン（ヘッダー）
         $('queue-retry-btn').addEventListener('click', function () {
